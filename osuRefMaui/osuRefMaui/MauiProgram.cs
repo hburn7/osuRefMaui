@@ -1,4 +1,6 @@
-﻿using osuRefMaui.Core.IRC.LoginInformation;
+﻿using IrcDotNet;
+using osuRefMaui.Core.IRC;
+using osuRefMaui.Core.IRC.LoginInformation;
 
 namespace osuRefMaui;
 
@@ -15,10 +17,16 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+		// Configure services
         builder.Services.AddLogging();
+
+		builder.Services.AddSingleton<StandardIrcClient>();
 
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<Credentials>(_ => CredentialsHandler.DeserializeCredentials());
+
+		// Handlers
+        builder.Services.AddSingleton<ConnectionHandler>();
 
 		return builder.Build();
 	}
