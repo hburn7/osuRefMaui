@@ -1,17 +1,25 @@
 ﻿using IrcDotNet;
+using Microsoft.Extensions.Logging;
+using osuRefMaui.Core.IRC.Interfaces;
 using osuRefMaui.Core.IRC.LoginInformation;
 
 namespace osuRefMaui.Core.IRC
 {
 	public class ConnectionHandler
 	{
+        private readonly ILogger<ConnectionHandler> _logger;
         private readonly StandardIrcClient _client;
         private readonly Credentials _credentials;
+        private readonly ChatQueue _chatQueue;
 
-        public ConnectionHandler(StandardIrcClient client, Credentials credentials)
+        public ConnectionHandler(ILogger<ConnectionHandler> logger,
+            StandardIrcClient client, Credentials credentials, ChatQueue chatQueue)
         {
+            _logger = logger;
             _client = client;
             _credentials = credentials;
+            _chatQueue = chatQueue;
+
             NetworkAccess = Connectivity.NetworkAccess;
 
             Connectivity.ConnectivityChanged += OnConnectionChanged;
@@ -43,10 +51,40 @@ namespace osuRefMaui.Core.IRC
             {
                 try
                 {
-                    _client.Connect("irc.ppy.sh", false, regInfo);
+                    Task.Run(async () =>
+                    {
+                        _client.Connect("irc.ppy.sh", false, regInfo);
 
-                    // todo: check for successful login
-                    return true;
+                        // todo: check for successful login
+                        bool? success = null;
+
+                        Action<IChatMessage> statusCheck = delegate (IChatMessage m)
+                        {
+                            // Invalid credentials
+                            if (m.IsStatusCode(464))
+                            {
+                                success = false;
+                            }
+                            else
+                            {
+                                success = true;
+                            }
+
+                            _logger.LogInformation($"Message received: {m}");
+                            _logger.LogInformation($"success = {success}");
+                        };
+
+                        _chatQueue.OnEnqueue += statusCheck;
+                        while (success == null)
+                        {
+                            _logger.LogInformation("Waiting for first message.");
+
+                        }
+                        _chatQueue.OnEnqueue -= statusCheck;
+
+                        return success.Value;
+                    });
+                    
                 }
                 catch (Exception)
                 {

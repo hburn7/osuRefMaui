@@ -1,4 +1,6 @@
 ﻿using IrcDotNet;
+using Microsoft.Extensions.Logging;
+using osuRefMaui.Core;
 using osuRefMaui.Core.IRC;
 using osuRefMaui.Core.IRC.LoginInformation;
 
@@ -18,12 +20,17 @@ public static class MauiProgram
 			});
 
 		// Configure services
-        builder.Services.AddLogging();
-
-		builder.Services.AddSingleton<StandardIrcClient>();
+        builder.Services.AddLogging(configure =>
+        {
+        });
 
         builder.Services.AddSingleton<MainPage>();
+
+        builder.Services.AddSingleton<StandardIrcClient>();
+
+		builder.Services.AddSingleton<ChatQueue>();
         builder.Services.AddSingleton<Credentials>(_ => CredentialsHandler.DeserializeCredentials());
+
 
 		// Handlers
         builder.Services.AddSingleton<ConnectionHandler>();
