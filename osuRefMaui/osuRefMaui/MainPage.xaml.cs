@@ -7,13 +7,15 @@ namespace osuRefMaui;
 
 public partial class MainPage : ContentPage
 {
+    private readonly MissionControl _missionControl;
     private readonly Credentials _credentials;
     private readonly ConnectionHandler _connectionHandler;
 
     // IncomingMessageHandler constructed here but may not be used.
-    public MainPage(ILogger<MainPage> logger, Credentials credentials, ConnectionHandler connectionHandler,
-        IncomingMessageHandler incomingMessageHandler)
+    public MainPage(ILogger<MainPage> logger, MissionControl missionControl, 
+        Credentials credentials, ConnectionHandler connectionHandler, IncomingMessageHandler incomingMessageHandler)
     {
+        _missionControl = missionControl;
         _credentials = credentials;
         _connectionHandler = connectionHandler;
 
@@ -68,9 +70,10 @@ public partial class MainPage : ContentPage
             CredentialsHandler.SerializeCredentials(_credentials);
         }
 
-        if (_connectionHandler.Connect())
+        if (await _connectionHandler.Connect())
         {
-            // Push navigation
+            // Push to next page once connected
+            await Window.Navigation.PushModalAsync(_missionControl);
         }
     }
 

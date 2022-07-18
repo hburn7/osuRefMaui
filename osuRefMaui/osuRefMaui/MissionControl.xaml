@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="osuRefMaui.MissionControl"
+             Title="MissionControl">
+    <ContentPage.Resources>
+        <Style x:Key="ButtonWarning"
+               TargetType="Button">
+            <Setter Property="FontFamily"
+                    Value="Consolas" />
+            <Setter Property="TextColor"
+                    Value="Black" />
+            <Setter Property="WidthRequest"
+                    Value="140" />
+            <Setter Property="HeightRequest"
+                    Value="40" />
+            <Setter Property="BackgroundColor"
+                    Value="#8E8" />
+            <Setter Property="VerticalOptions"
+                    Value="Start" />
+            <Setter Property="HorizontalOptions"
+                    Value="Start" />
+        </Style>
+        <Style x:Key="ButtonDanger"
+               TargetType="Button">
+            <Setter Property="FontFamily"
+                    Value="Consolas" />
+            <Setter Property="TextColor"
+                    Value="Black" />
+            <Setter Property="WidthRequest"
+                    Value="140" />
+            <Setter Property="HeightRequest"
+                    Value="40" />
+            <Setter Property="BackgroundColor"
+                    Value="#F55" />
+            <Setter Property="VerticalOptions"
+                    Value="Start" />
+            <Setter Property="HorizontalOptions"
+                    Value="Start" />
+        </Style>
+    </ContentPage.Resources>
+
+    <FlexLayout Wrap="Wrap" Direction="Column" AlignItems="Center" JustifyContent="Start">
+        <Label Text="o!Ref"
+                   SemanticProperties.HeadingLevel="Level1"
+                   FontSize="32"
+                   VerticalTextAlignment="Start"
+                   HorizontalTextAlignment="Start" />
+        <!-- osu! Main Chat Window Background & Tabs -->
+        <Border StrokeShape="RoundRectangle 15,15,15,15"
+                HorizontalOptions="StartAndExpand"
+                VerticalOptions="StartAndExpand"
+                BackgroundColor="#333"
+                MaximumWidthRequest="500"
+                MinimumWidthRequest="100">
+            <Grid x:Name="ChatGrid">
+                <!-- Chat tabs -->
+                <ScrollView x:Name="ChatTabScrollView"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Start"
+                            MaximumHeightRequest="50"
+                            Orientation="Horizontal"
+                            HorizontalScrollBarVisibility="Default">
+                    <!-- osu! chat tabs -->
+                    <HorizontalStackLayout x:Name="ChatTabHorizontalStack"
+                                           Spacing="5"
+                                           Margin="5,10"
+                                           VerticalOptions="Start"
+                                           HorizontalOptions="Start">
+                        <Button x:Name="BtnAddChannel"
+                                Text="+"
+                                TextColor="White"
+                                BackgroundColor="LightCoral"
+                                FontFamily="Consolas"
+                                FontSize="14"
+                                Padding="10,4"
+                                HorizontalOptions="Start"
+                                VerticalOptions="Start"
+                                Clicked="BtnAddChannel_Clicked" />
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <ScrollView x:Name="ChatScrollView"
+                            VerticalOptions="StartAndExpand"
+                            HorizontalOptions="Center"
+                            Orientation="Vertical"
+                            Margin="50"
+                            WidthRequest="500"
+                            VerticalScrollBarVisibility="Never">
+                    <!-- All values in ChatStack are added programatically -->
+                    <VerticalStackLayout x:Name="ChatStack" />
+                </ScrollView>
+                <!-- osu! main chat window text box -->
+                <Entry x:Name="ChatBox"
+                       WidthRequest="500"
+                       HeightRequest="50"
+                       VerticalOptions="End"
+                       HorizontalOptions="Start"
+                       BackgroundColor="#222"
+                       Completed="ChatBox_Completed" />
+            </Grid>
+        </Border>
+
+
+        <!-- Command Center -->
+        <Border StrokeShape="RoundRectangle 15,15,15,15"
+                BackgroundColor="#333"
+                MaximumWidthRequest="500"
+                MinimumWidthRequest="250"
+                VerticalOptions="Start"
+                HorizontalOptions="Start">
+            <StackLayout
+                Margin="10"
+                Spacing="5">
+                <Label Text="Command Center"
+                       FontFamily="Consolas"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Start"/>
+                <Button x:Name="cmdMpTimer120"
+                        Style="{StaticResource ButtonWarning}"
+                        Text="!mp timer 120"
+                        Clicked="cmdMpTimer120_Clicked" />
+                <Button x:Name="cmdMpTimer90"
+                        Style="{StaticResource ButtonWarning}"
+                        Text="!mp timer 90"
+                        Clicked="cmdMpTimer90_Clicked" />
+                <Button x:Name="cmdMpStart10"
+                        Style="{StaticResource ButtonDanger}"
+                        Text="!mp start 10"
+                        Clicked="cmdMpStart10_Clicked" />
+                <Button x:Name="cmdMpStart5"
+                        Style="{StaticResource ButtonDanger}"
+                        Text="!mp start 5"
+                        Clicked="cmdMpStart5_Clicked" />
+                <Button x:Name="cmdMpAbort"
+                        Style="{StaticResource ButtonDanger}"
+                        HorizontalOptions="End"
+                        VerticalOptions="End"
+                        Margin="15"
+                        Background="#D55"
+                        FontSize="16"
+                        Text="!mp abort"
+                        Clicked="cmdMpAbort_Clicked" />
+            </StackLayout>
+        </Border>
+        <!-- Filters -->
+        <Border StrokeShape="RoundRectangle 15,15,15,15"
+                BackgroundColor="#333"
+                MaximumWidthRequest="250"
+                MaximumHeightRequest="250"
+                VerticalOptions="Center"
+                HorizontalOptions="Start">
+            <Grid>
+                <Label Text="Filters"
+                       FontFamily="Consolas"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Start" />
+                <HorizontalStackLayout Spacing="5"
+                                       Margin="20,40"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="0"
+                                         Margin="11,-7"
+                                         HorizontalOptions="Start"
+                                         VerticalOptions="Start">
+                        <CheckBox x:Name="cbFilterBanchoJoin"
+                                  IsChecked="True"
+                                  CheckedChanged="filterCheckBoxBanchoJoin_CheckChanged" />
+                        <CheckBox x:Name="cbFilterBanchoQuit"
+                                  IsChecked="True"
+                                  CheckedChanged="filterCheckBoxBanchoQuit_CheckChanged" />
+                        <CheckBox x:Name="cbFilterBanchoPing"
+                                  IsChecked="True"
+                                  CheckedChanged="filterCheckBoxBanchoPing_CheckChanged" />
+                        <CheckBox x:Name="cbFilterBanchoSlotMove"
+                                  IsChecked="True"
+                                  CheckedChanged="filterCheckBoxBanchoSlotMove_CheckChanged" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="13"
+                                         Margin="-10, -3.5"
+                                         HorizontalOptions="Start"
+                                         VerticalOptions="Start">
+                        <Label Text="Bancho Join" />
+                        <Label Text="Bancho Quit" />
+                        <Label Text="Bancho Ping" />
+                        <Label Text="Bancho Slot Move" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+    </FlexLayout>
+</ContentPage>

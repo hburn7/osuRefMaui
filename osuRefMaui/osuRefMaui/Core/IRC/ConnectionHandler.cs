@@ -31,12 +31,12 @@ namespace osuRefMaui.Core.IRC
         public NetworkAccess NetworkAccess { get; private set; }
 
         /// <summary>
-        /// Conencts the client with the given credentials.
+        /// Attempts to connect to osu!Bancho (IRC)
         /// </summary>
         /// <returns>True if the connection is already established or a new
         /// one has been made. False if the user has no internet access
         /// or cannot connect.</returns>
-        public bool Connect()
+        public async Task<bool> Connect()
         {
             var regInfo = new IrcUserRegistrationInfo
             {
@@ -50,10 +50,9 @@ namespace osuRefMaui.Core.IRC
                 return true;
             }
 
+            bool success = false;
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
-                bool? success = null;
-
                 void StatusCheck(IChatMessage m)
                 {
                     // Invalid credentials
@@ -70,7 +69,7 @@ namespace osuRefMaui.Core.IRC
                     _logger.LogInformation($"success = {success}");
                 }
 
-                Task.Run(async () =>
+                return await Task.Run(async () =>
                 {
                     try
                     {
@@ -79,11 +78,11 @@ namespace osuRefMaui.Core.IRC
                         _chatQueue.OnEnqueue += StatusCheck;
 
                         int retries = 10;
-                        while (success == null)
+                        while (!success)
                         {
                             if (retries == 0)
                             {
-                                return false;
+                                break;
                             }
 
                             _logger.LogInformation($"Awaiting connection. {retries} attempts remaining.");
@@ -93,13 +92,13 @@ namespace osuRefMaui.Core.IRC
                         }
 
                         _chatQueue.OnEnqueue -= StatusCheck;
-
-                        return success.Value;
                     }
                     catch (Exception)
                     {
                         return false;
                     }
+
+                    return success;
                 });
             }
             

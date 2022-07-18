@@ -54,4 +54,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="MissionControl.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>
