@@ -70,10 +70,12 @@ public partial class MainPage : ContentPage
             CredentialsHandler.SerializeCredentials(_credentials);
         }
 
+        Login.IsEnabled = false;
         if (await _connectionHandler.Connect())
         {
             // Push to next page once connected
             await Window.Navigation.PushModalAsync(_missionControl);
+            Login.IsEnabled = true;
         }
     }
 
