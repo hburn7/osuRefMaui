@@ -1,9 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.IRC.Interfaces;
+
 #pragma warning disable CS0108,
 
-namespace osuRefMaui.Core
+namespace osuRefMaui.Core.IRC
 {
     public class ChatQueue : ConcurrentQueue<IChatMessage>
     {

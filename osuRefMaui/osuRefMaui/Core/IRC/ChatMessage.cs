@@ -20,7 +20,7 @@ namespace osuRefMaui.Core.IRC
             Channel = IdentifyChannel();
             Content = IdentifyContent();
             Sender = IdentifySender();
-            Recipient = IdentifyRecipient();
+            StatusCode = IdentifyStatusCode();
         }
 
         public DateTimeOffset TimeStamp { get; }
@@ -28,16 +28,16 @@ namespace osuRefMaui.Core.IRC
         public string Channel { get; }
         public string Content { get; }
         public string Sender { get; }
-        public string Recipient { get; }
+        public int? StatusCode { get; }
 
         public override string ToString()
         {
-            return $"ChatMessage({TimeStamp}, {Command}, {Sender}: {Recipient} ({Channel}), {Content})";
+            return $"ChatMessage({TimeStamp}, {Command}, {Sender}: {Channel}, {Content})";
         }
 
         public bool IsStatusCode(int statusCode)
         {
-            throw new NotImplementedException();
+            return Command == IrcCommand.Other && StatusCode == statusCode;
         }
 
         private IrcCommand IdentifyCommand()
@@ -63,11 +63,12 @@ namespace osuRefMaui.Core.IRC
                 _ => IrcCommand.Other
             };
         }
+
         private string IdentifyChannel()
         {
-            // todo: Test
-            return Recipient;
+            return Source.Parameters[0];
         }
+
         private string IdentifyContent()
         {
             if (Command == IrcCommand.PrivateMessage && (!Source.Source?.Name?.Equals("cho.ppy.sh") ?? false))
@@ -77,14 +78,20 @@ namespace osuRefMaui.Core.IRC
 
             return string.Join(" ", Source.Parameters.ToArray()[1..]).Trim();
         }
+
         private string IdentifySender()
         {
             return Source.Source?.Name;
         }
-        private string IdentifyRecipient()
+
+        private int? IdentifyStatusCode()
         {
-            // todo: test
-            return Source.Parameters[0];
+            if (int.TryParse(Source.Command, out int code))
+            {
+                return code;
+            }
+
+            return null;
         }
     }
 }

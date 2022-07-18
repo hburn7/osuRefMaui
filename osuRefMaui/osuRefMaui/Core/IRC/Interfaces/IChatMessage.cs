@@ -17,7 +17,8 @@ namespace osuRefMaui.Core.IRC.Interfaces
         public IrcClient.IrcMessage Source { get; }
 
         /// <summary>
-        /// The channel the message is sent through
+        /// The channel the message is sent through. This is either an
+        /// irc channel or a user.
         /// </summary>
         public string Channel { get; }
         /// <summary>
@@ -29,11 +30,6 @@ namespace osuRefMaui.Core.IRC.Interfaces
         /// The name of the user who sent the message
         /// </summary>
         public string Sender { get; }
-        /// <summary>
-        /// The name of the recipient of the message
-        /// </summary>
-        public string Recipient { get; }
-        public string ToString();
 
         /// <summary>
         /// Whether the command is of the given status code

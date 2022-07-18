@@ -23,6 +23,9 @@ namespace osuRefMaui.Core.IRC
             NetworkAccess = Connectivity.NetworkAccess;
 
             Connectivity.ConnectivityChanged += OnConnectionChanged;
+
+            _client.Connected += (_, _) => _logger.LogInformation("Client connected.");
+            _client.Disconnected += (_, _) => _logger.LogInformation("Client disconnected.");
         }
 
         public NetworkAccess NetworkAccess { get; private set; }
@@ -49,47 +52,55 @@ namespace osuRefMaui.Core.IRC
 
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
-                try
+                bool? success = null;
+
+                void StatusCheck(IChatMessage m)
                 {
-                    Task.Run(async () =>
+                    // Invalid credentials
+                    if (m.IsStatusCode(464))
+                    {
+                        success = false;
+                    }
+                    else
+                    {
+                        success = true;
+                    }
+
+                    _logger.LogInformation($"Message received: {m}");
+                    _logger.LogInformation($"success = {success}");
+                }
+
+                Task.Run(async () =>
+                {
+                    try
                     {
                         _client.Connect("irc.ppy.sh", false, regInfo);
 
-                        // todo: check for successful login
-                        bool? success = null;
+                        _chatQueue.OnEnqueue += StatusCheck;
 
-                        Action<IChatMessage> statusCheck = delegate (IChatMessage m)
-                        {
-                            // Invalid credentials
-                            if (m.IsStatusCode(464))
-                            {
-                                success = false;
-                            }
-                            else
-                            {
-                                success = true;
-                            }
-
-                            _logger.LogInformation($"Message received: {m}");
-                            _logger.LogInformation($"success = {success}");
-                        };
-
-                        _chatQueue.OnEnqueue += statusCheck;
+                        int retries = 10;
                         while (success == null)
                         {
-                            _logger.LogInformation("Waiting for first message.");
+                            if (retries == 0)
+                            {
+                                return false;
+                            }
 
+                            _logger.LogInformation($"Awaiting connection. {retries} attempts remaining.");
+                            await Task.Delay(500);
+
+                            retries -= 1;
                         }
-                        _chatQueue.OnEnqueue -= statusCheck;
+
+                        _chatQueue.OnEnqueue -= StatusCheck;
 
                         return success.Value;
-                    });
-                    
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                });
             }
             
             // User is unable to access the internet

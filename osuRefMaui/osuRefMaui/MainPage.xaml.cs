@@ -1,4 +1,6 @@
-﻿using osuRefMaui.Core.IRC;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using osuRefMaui.Core.IRC;
 using osuRefMaui.Core.IRC.LoginInformation;
 
 namespace osuRefMaui;
@@ -8,7 +10,9 @@ public partial class MainPage : ContentPage
     private readonly Credentials _credentials;
     private readonly ConnectionHandler _connectionHandler;
 
-    public MainPage(Credentials credentials, ConnectionHandler connectionHandler)
+    // IncomingMessageHandler constructed here but may not be used.
+    public MainPage(ILogger<MainPage> logger, Credentials credentials, ConnectionHandler connectionHandler,
+        IncomingMessageHandler incomingMessageHandler)
     {
         _credentials = credentials;
         _connectionHandler = connectionHandler;
@@ -64,7 +68,10 @@ public partial class MainPage : ContentPage
             CredentialsHandler.SerializeCredentials(_credentials);
         }
 
-        _connectionHandler.Connect();
+        if (_connectionHandler.Connect())
+        {
+            // Push navigation
+        }
     }
 
     private async void OnIRCPassButtonClicked(object sender, EventArgs e)

@@ -20,8 +20,9 @@ public static class MauiProgram
 			});
 
 		// Configure services
-        builder.Services.AddLogging(configure =>
+        builder.Services.AddLogging(loggingBuilder =>
         {
+            loggingBuilder.AddDebug();
         });
 
         builder.Services.AddSingleton<MainPage>();
@@ -34,6 +35,7 @@ public static class MauiProgram
 
 		// Handlers
         builder.Services.AddSingleton<ConnectionHandler>();
+        builder.Services.AddSingleton<IncomingMessageHandler>();
 
 		return builder.Build();
 	}
