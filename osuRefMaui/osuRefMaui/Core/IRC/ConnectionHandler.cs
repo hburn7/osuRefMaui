@@ -27,7 +27,7 @@ namespace osuRefMaui.Core.IRC
 			_client.Connected += (_, _) => _logger.LogInformation("Client connected");
 			_client.Disconnected += (_, _) => _logger.LogInformation("Client disconnected");
 
-			_tabHandler.OnTabCreated += channel =>
+			_tabHandler.OnTabCreated += (channel, _) =>
 			{
 				if (!channel.Equals(TabHandler.DefaultTabName))
 				{
