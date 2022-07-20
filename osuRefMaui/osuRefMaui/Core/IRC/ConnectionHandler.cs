@@ -20,15 +20,11 @@ namespace osuRefMaui.Core.IRC
             _credentials = credentials;
             _chatQueue = chatQueue;
 
-            NetworkAccess = Connectivity.NetworkAccess;
-
             Connectivity.ConnectivityChanged += OnConnectionChanged;
 
             _client.Connected += (_, _) => _logger.LogInformation("Client connected.");
             _client.Disconnected += (_, _) => _logger.LogInformation("Client disconnected.");
         }
-
-        public NetworkAccess NetworkAccess { get; private set; }
 
         /// <summary>
         /// Attempts to connect to osu!Bancho (IRC)
@@ -86,7 +82,7 @@ namespace osuRefMaui.Core.IRC
                             }
 
                             _logger.LogInformation($"Awaiting connection. {retries} attempts remaining.");
-                            await Task.Delay(500);
+                            await Task.Delay(1000);
 
                             retries -= 1;
                         }
@@ -98,7 +94,7 @@ namespace osuRefMaui.Core.IRC
                         return false;
                     }
 
-                    return success;
+                    return _client.IsConnected; // If the connection failed, this will be false.
                 });
             }
             
@@ -116,9 +112,6 @@ namespace osuRefMaui.Core.IRC
         private void OnConnectionChanged(object sender, ConnectivityChangedEventArgs e)
         {
             // todo: Reconnect if needed
-            NetworkAccess = e.NetworkAccess;
-            
-            MessagingCenter.Send<ConnectionHandler, NetworkAccess>(this, "Connectivity changed", NetworkAccess);
         }
     }
 }
