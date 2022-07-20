@@ -20,6 +20,7 @@ namespace osuRefMaui.Core.IRC
 			_tabChatStacks = new ConcurrentDictionary<string, VerticalStackLayout>(StringComparer.OrdinalIgnoreCase);
 		}
 
+		public string ActiveTab { get; set; } = DefaultTabName;
 		/// The main purpose of these Actions is to
 		/// give a notification to the UI thread
 		/// so it knows to create the visuals.
@@ -28,9 +29,9 @@ namespace osuRefMaui.Core.IRC
 		/// </summary>
 		public event Action<string> OnTabChatCleared;
 		/// <summary>
-		///  Fired when a new tab is created
+		///  Fired when a new tab is created. Bool indicates whether the tab was manually added.
 		/// </summary>
-		public event Action<string> OnTabCreated;
+		public event Action<string, bool> OnTabCreated;
 
 		public bool TryGetChatStack(string channel, out VerticalStackLayout chatStack) =>
 			_tabChatStacks.TryGetValue(channel, out chatStack);
@@ -56,8 +57,7 @@ namespace osuRefMaui.Core.IRC
 					_logger.LogInformation("No tab to route message to. Creating...");
 
 					// Create the tab if it doesn't exist.
-					AddTab(channel);
-					TryGetChatStack(channel, out _);
+					AddTab(channel, false);
 				}
 			}
 			else
@@ -83,8 +83,9 @@ namespace osuRefMaui.Core.IRC
 		/// <summary>
 		///  Adds a new tab to the internal collection
 		/// </summary>
-		/// <param name="channel"></param>
-		public void AddTab(string channel)
+		/// <param name="channel">The name of the chat channel or user</param>
+		/// <param name="manuallyAdded">Whether the channel was added manually by user input</param>
+		public void AddTab(string channel, bool manuallyAdded)
 		{
 			if (channel.Equals(_credentials.Username, StringComparison.OrdinalIgnoreCase))
 			{
@@ -96,7 +97,7 @@ namespace osuRefMaui.Core.IRC
 				_logger.LogWarning($"An attempt was made to add a tab that already exists: {channel}");
 			}
 
-			OnTabCreated?.Invoke(channel);
+			OnTabCreated?.Invoke(channel, manuallyAdded);
 			_logger.LogInformation($"Tab created: {channel}");
 		}
 
