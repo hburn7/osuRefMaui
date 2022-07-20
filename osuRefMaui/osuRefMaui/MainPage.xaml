@@ -1,22 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="osuRefMaui.MainPage">
 
     <ScrollView>
-        <VerticalStackLayout 
-            Spacing="25" 
-            Padding="30,0" 
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
             VerticalOptions="Center"
             HorizontalOptions="Center">
 
-            <Label 
+            <Label
                 Text="o!Ref"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="32"
                 HorizontalOptions="Center" />
 
-            <Label 
+            <Label
                 Text="Reffing made easy! Created by Stage"
                 SemanticProperties.HeadingLevel="Level2"
                 FontSize="18"
@@ -33,7 +34,7 @@
                     SemanticProperties.Hint="osu! Username"
                     HorizontalOptions="Center" />
 
-                <Entry 
+                <Entry
                     x:Name="Password"
                     Placeholder="IRC Password"
                     SemanticProperties.Hint="IRC Password"
@@ -43,7 +44,6 @@
                 <CheckBox
                     x:Name="RememberMe" />
                 <Label
-                    x:Name="RememberMeLabel"
                     Text="Remember Me"
                     VerticalOptions="Center" />
 
@@ -55,16 +55,15 @@
                 HorizontalOptions="Center">
 
                 <Button
-                x:Name="IRCPassButton"
-                Text="IRC Page"
-                MaximumWidthRequest="100"
-                Clicked="OnIRCPassButtonClicked"/>
+                    Text="IRC Page"
+                    MaximumWidthRequest="100"
+                    Clicked="OnIRCPassButtonClicked" />
 
                 <Button
-                x:Name="Login"
-                Text="Login" 
-                MinimumWidthRequest="200"
-                Clicked="OnLoginClicked"/>
+                    x:Name="Login"
+                    Text="Login"
+                    MinimumWidthRequest="200"
+                    Clicked="OnLoginClicked" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

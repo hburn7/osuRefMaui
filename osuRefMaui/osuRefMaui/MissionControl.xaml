@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="osuRefMaui.MissionControl"
@@ -42,10 +43,10 @@
 
     <FlexLayout Wrap="Wrap" Direction="Column" AlignItems="Center" JustifyContent="Start">
         <Label Text="o!Ref"
-                   SemanticProperties.HeadingLevel="Level1"
-                   FontSize="32"
-                   VerticalTextAlignment="Start"
-                   HorizontalTextAlignment="Start" />
+               SemanticProperties.HeadingLevel="Level1"
+               FontSize="32"
+               VerticalTextAlignment="Start"
+               HorizontalTextAlignment="Start" />
         <!-- osu! Main Chat Window Background & Tabs -->
         <Border StrokeShape="RoundRectangle 15,15,15,15"
                 HorizontalOptions="StartAndExpand"
@@ -53,30 +54,30 @@
                 BackgroundColor="#333"
                 MaximumWidthRequest="500"
                 MinimumWidthRequest="100">
-            <Grid x:Name="ChatGrid">
+            <Grid>
                 <!-- Chat tabs -->
-                <ScrollView x:Name="ChatTabScrollView"
-                            VerticalOptions="Start"
-                            HorizontalOptions="Start"
-                            MaximumHeightRequest="50"
-                            Orientation="Horizontal"
-                            HorizontalScrollBarVisibility="Default">
+                <ScrollView
+                    VerticalOptions="Start"
+                    HorizontalOptions="Start"
+                    MaximumHeightRequest="50"
+                    Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Default">
                     <!-- osu! chat tabs -->
                     <HorizontalStackLayout x:Name="ChatTabHorizontalStack"
                                            Spacing="5"
                                            Margin="5,10"
                                            VerticalOptions="Start"
                                            HorizontalOptions="Start">
-                        <Button x:Name="BtnAddChannel"
-                                Text="+"
-                                TextColor="White"
-                                BackgroundColor="LightCoral"
-                                FontFamily="Consolas"
-                                FontSize="14"
-                                Padding="10,4"
-                                HorizontalOptions="Start"
-                                VerticalOptions="Start"
-                                Clicked="BtnAddChannel_Clicked" />
+                        <Button
+                            Text="+"
+                            TextColor="White"
+                            BackgroundColor="LightCoral"
+                            FontFamily="Consolas"
+                            FontSize="14"
+                            Padding="10,4"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            Clicked="BtnAddChannel_Clicked" />
                     </HorizontalStackLayout>
                 </ScrollView>
                 <!--Chat label scroll view-->
@@ -92,13 +93,13 @@
                     <!--<VerticalStackLayout x:Name="ChatStack" />-->
                 </ScrollView>
                 <!-- osu! main chat window text box -->
-                <Entry x:Name="ChatBox"
-                       WidthRequest="500"
-                       HeightRequest="50"
-                       VerticalOptions="End"
-                       HorizontalOptions="Start"
-                       BackgroundColor="#222"
-                       Completed="ChatBox_Completed" />
+                <Entry
+                    WidthRequest="500"
+                    HeightRequest="50"
+                    VerticalOptions="End"
+                    HorizontalOptions="Start"
+                    BackgroundColor="#222"
+                    Completed="ChatBox_Completed" />
             </Grid>
         </Border>
 
@@ -117,7 +118,7 @@
                        FontFamily="Consolas"
                        FontSize="24"
                        HorizontalOptions="Center"
-                       VerticalOptions="Start"/>
+                       VerticalOptions="Start" />
                 <Button x:Name="cmdMpTimer120"
                         Style="{StaticResource ButtonWarning}"
                         Text="!mp timer 120"

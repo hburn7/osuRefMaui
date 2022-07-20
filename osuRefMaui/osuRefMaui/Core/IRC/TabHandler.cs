@@ -20,27 +20,27 @@ namespace osuRefMaui.Core.IRC
 			_tabChatStacks = new ConcurrentDictionary<string, VerticalStackLayout>(StringComparer.OrdinalIgnoreCase);
 		}
 
-        /// The main purpose of these Actions is to
-        /// give a notification to the UI thread
-        /// so it knows to create the visuals.
-        /// <summary>
-        ///  Fired when the program deletes a tab
-        /// </summary>
-        public event Action<string> OnTabChatCleared;
-        /// <summary>
-        ///  Fired when a new tab is created
-        /// </summary>
-        public event Action<string> OnTabCreated;
+		/// The main purpose of these Actions is to
+		/// give a notification to the UI thread
+		/// so it knows to create the visuals.
+		/// <summary>
+		///  Fired when the program deletes a tab
+		/// </summary>
+		public event Action<string> OnTabChatCleared;
+		/// <summary>
+		///  Fired when a new tab is created
+		/// </summary>
+		public event Action<string> OnTabCreated;
 
 		public bool TryGetChatStack(string channel, out VerticalStackLayout chatStack) =>
 			_tabChatStacks.TryGetValue(channel, out chatStack);
 
-        /// <summary>
-        ///  Routes messages to tabs and does other necessary processing
-        ///  whenever a message is received
-        /// </summary>
-        /// <param name="chatMessage"></param>
-        public void RouteToTab(IChatMessage chatMessage)
+		/// <summary>
+		///  Routes messages to tabs and does other necessary processing
+		///  whenever a message is received
+		/// </summary>
+		/// <param name="chatMessage"></param>
+		public void RouteToTab(IChatMessage chatMessage)
 		{
 			string channel = chatMessage.Channel;
 
@@ -80,11 +80,11 @@ namespace osuRefMaui.Core.IRC
 			chatStack.Children.Add(label);
 		}
 
-        /// <summary>
-        ///  Adds a new tab to the internal collection
-        /// </summary>
-        /// <param name="channel"></param>
-        public void AddTab(string channel)
+		/// <summary>
+		///  Adds a new tab to the internal collection
+		/// </summary>
+		/// <param name="channel"></param>
+		public void AddTab(string channel)
 		{
 			if (channel.Equals(_credentials.Username, StringComparison.OrdinalIgnoreCase))
 			{
@@ -100,10 +100,10 @@ namespace osuRefMaui.Core.IRC
 			_logger.LogInformation($"Tab created: {channel}");
 		}
 
-        /// <summary>
-        ///  Clears a chat stack from memory.
-        /// </summary>
-        private void ClearStack(string channel)
+		/// <summary>
+		///  Clears a chat stack from memory.
+		/// </summary>
+		private void ClearStack(string channel)
 		{
 			if (!_tabChatStacks.TryRemove(channel, out _))
 			{

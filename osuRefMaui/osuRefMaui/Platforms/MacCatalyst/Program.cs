@@ -1,6 +1,9 @@
-﻿using ObjCRuntime;
+﻿// ReSharper disable RedundantUsingDirective
+
+using ObjCRuntime;
 using UIKit;
 
+// ReSharper disable CheckNamespace
 namespace osuRefMaui;
 
 public class Program

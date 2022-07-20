@@ -1,5 +1,6 @@
 ﻿using Foundation;
 
+// ReSharper disable CheckNamespace
 namespace osuRefMaui;
 
 [Register("AppDelegate")]

@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.Derivatives.Buttons;
 using osuRefMaui.Core.IRC;
 
+// ReSharper disable RedundantExtendsListEntry
 namespace osuRefMaui;
 
 public partial class MissionControl : ContentPage
@@ -39,7 +39,7 @@ public partial class MissionControl : ContentPage
 
 			// Swap to default tab
 			UI_SwapTab(TabHandler.DefaultTabName);
-			
+
 			// Chat dequeue loop
 			Task.Run(async () =>
 			{
@@ -53,7 +53,7 @@ public partial class MissionControl : ContentPage
 			         * and act upon. This is how the UI gets updated.
 			         */
 
-					while (_chatQueue.TryDequeue(out _)) { }
+					while (_chatQueue.TryDequeue(out _)) {}
 
 					await Task.Delay(250);
 				}

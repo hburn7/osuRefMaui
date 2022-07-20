@@ -1,4 +1,7 @@
-﻿namespace osuRefMaui;
+﻿// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
+
+namespace osuRefMaui;
 
 public partial class App : Application
 {
@@ -6,6 +9,6 @@ public partial class App : Application
 	{
 		InitializeComponent();
 
-        MainPage = page;
-    }
+		MainPage = page;
+	}
 }
