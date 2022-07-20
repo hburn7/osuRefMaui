@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using osuRefMaui.Core.Coloring;
 using osuRefMaui.Core.Derivatives.Buttons;
 using osuRefMaui.Core.IRC;
 
@@ -8,10 +10,12 @@ public partial class MissionControl : ContentPage
 {
 	private static bool _previouslyLoaded;
 	private readonly ChatQueue _chatQueue;
+	private readonly ILogger<MissionControl> _logger;
 	private readonly TabHandler _tabHandler;
 
-	public MissionControl(TabHandler tabHandler, ChatQueue chatQueue)
+	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue)
 	{
+		_logger = logger;
 		_tabHandler = tabHandler;
 		_chatQueue = chatQueue;
 
@@ -26,15 +30,22 @@ public partial class MissionControl : ContentPage
 	{
 		if (!_previouslyLoaded)
 		{
+			// Event handler which sets child's clicked event handler which then resets the color of the tab
+			ChatTabHorizontalStack.ChildAdded += ChatTabHorizontalStackOnChildAdded;
+
 			_tabHandler.OnTabCreated += UI_AddTab;
 
 			// Create default tab
-			_tabHandler.AddTab(TabHandler.DefaultTabName);
+			_tabHandler.AddTab(TabHandler.DefaultTabName, false);
 
 			_chatQueue.OnDequeue += m =>
 			{
 				// Route chat labels to tab
-				Window.Dispatcher.Dispatch(() => { _tabHandler.RouteToTab(m); });
+				Window.Dispatcher.Dispatch(() =>
+				{
+					_tabHandler.RouteToTab(m);
+					UI_RecolorTab(m.Sender);
+				});
 			};
 
 			// Swap to default tab
@@ -63,6 +74,27 @@ public partial class MissionControl : ContentPage
 		_previouslyLoaded = true;
 	}
 
+	/// <summary>
+	///  Subscribes the added button's Clicked event handler to reset the coloring and clear
+	///  the new message alert.
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	private void ChatTabHorizontalStackOnChildAdded(object sender, ElementEventArgs e)
+	{
+		try
+		{
+			_logger.LogInformation("Child added");
+			// Reset button color to default when clicked. This clears the notification coloring.
+			var button = (Button)e.Element;
+			button.Clicked += (s, _) => { Window.Dispatcher.Dispatch(() => { UI_RecolorTab(((Button)s)!.Text, true); }); };
+		}
+		catch (Exception exception)
+		{
+			_logger.LogCritical(exception, $"Something was added to the tab stack that was not a button: Element = {e.Element}");
+		}
+	}
+
 	private void UI_SwapTab(string channel)
 	{
 		if (!_tabHandler.TryGetChatStack(channel, out var chatStack))
@@ -71,22 +103,62 @@ public partial class MissionControl : ContentPage
 		}
 
 		ChatScrollView.Content = chatStack;
+		_tabHandler.ActiveTab = channel;
 	}
 
-	private void UI_AddTab(string channel) => Window.Dispatcher.Dispatch(() =>
+	private void UI_AddTab(string channel, bool manuallyAdded) => Window.Dispatcher.Dispatch(() =>
 	{
 		var button = new TabButton(channel);
 		button.Clicked += (s, _) => UI_SwapTab(((TabButton)s)!.Text);
 
 		ChatTabHorizontalStack.Insert(ChatTabHorizontalStack.Count - 1, button);
+
+		if (!manuallyAdded)
+		{
+			UI_RecolorTab(channel);
+		}
 	});
+
+	private void UI_RecolorTab(string channel, bool resetToDefault = false)
+	{
+		if (channel == _tabHandler.ActiveTab)
+		{
+			resetToDefault = true;
+		}
+
+		bool isDirectMessage = !channel.StartsWith("#") && !channel.Equals(TabHandler.DefaultTabName);
+
+		try
+		{
+			var button = (Button)ChatTabHorizontalStack.First(x => ((Button)x).Text.Equals(channel, StringComparison.OrdinalIgnoreCase));
+
+			if (resetToDefault)
+			{
+				button.TextColor = TabPalette.TabText;
+				button.BackgroundColor = TabPalette.TabBackground;
+				return;
+			}
+
+			if (isDirectMessage)
+			{
+				button.TextColor = TabPalette.TabDirectUnreadText;
+				button.BackgroundColor = TabPalette.TabDirectUnreadBackground;
+			}
+			else
+			{
+				button.TextColor = TabPalette.TabGeneralUnreadText;
+				button.BackgroundColor = TabPalette.TabGeneralUnreadBackground;
+			}
+		}
+		catch (InvalidOperationException) {}
+	}
 
 	private async void BtnAddChannel_Clicked(object sender, EventArgs e)
 	{
 		string channel = await DisplayPromptAsync("Add Channel",
 			"Type the channel or username to add.", placeholder: "#osu");
 
-		_tabHandler.AddTab(channel);
+		_tabHandler.AddTab(channel, true);
 	}
 
 	private void ChatBox_Completed(object sender, EventArgs e) {}
