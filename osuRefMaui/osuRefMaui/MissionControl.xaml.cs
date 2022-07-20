@@ -84,10 +84,12 @@ public partial class MissionControl : ContentPage
 	{
 		try
 		{
-			_logger.LogInformation("Child added");
 			// Reset button color to default when clicked. This clears the notification coloring.
 			var button = (Button)e.Element;
-			button.Clicked += (s, _) => { Window.Dispatcher.Dispatch(() => { UI_RecolorTab(((Button)s)!.Text, true); }); };
+			button.Clicked += (s, _) =>
+			{
+				Window.Dispatcher.Dispatch(() => { UI_RecolorTab(((Button)s)!.Text, true); });
+			};
 		}
 		catch (Exception exception)
 		{
