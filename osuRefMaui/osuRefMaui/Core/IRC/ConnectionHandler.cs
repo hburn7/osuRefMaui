@@ -11,13 +11,11 @@ namespace osuRefMaui.Core.IRC
 		private readonly StandardIrcClient _client;
 		private readonly Credentials _credentials;
 		private readonly ILogger<ConnectionHandler> _logger;
-		private readonly TabHandler _tabHandler;
 
 		public ConnectionHandler(ILogger<ConnectionHandler> logger, TabHandler tabHandler,
 			StandardIrcClient client, Credentials credentials, ChatQueue chatQueue)
 		{
 			_logger = logger;
-			_tabHandler = tabHandler;
 			_client = client;
 			_credentials = credentials;
 			_chatQueue = chatQueue;
@@ -27,7 +25,7 @@ namespace osuRefMaui.Core.IRC
 			_client.Connected += (_, _) => _logger.LogInformation("Client connected");
 			_client.Disconnected += (_, _) => _logger.LogInformation("Client disconnected");
 
-			_tabHandler.OnTabCreated += (channel, _) =>
+			tabHandler.OnTabCreated += (channel, _) =>
 			{
 				if (!channel.Equals(TabHandler.DefaultTabName))
 				{
