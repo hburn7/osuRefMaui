@@ -87,7 +87,7 @@
                             Orientation="Vertical"
                             Margin="50"
                             WidthRequest="500"
-                            VerticalScrollBarVisibility="Never">
+                            VerticalScrollBarVisibility="Always">
                     <!-- All VerticalStackLayouts in ChatScrollView are added programatically -->
                     <!--Each of the VerticalStackLayouts contain labels as children, all are added programatically-->
                     <!--<VerticalStackLayout x:Name="ChatStack" />-->
