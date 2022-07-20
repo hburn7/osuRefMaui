@@ -1,4 +1,6 @@
-﻿using IrcDotNet;
+﻿#nullable enable
+
+using IrcDotNet;
 using osuRefMaui.Core.IRC.Interfaces;
 
 namespace osuRefMaui.Core.IRC
