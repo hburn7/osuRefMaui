@@ -9,7 +9,9 @@ namespace osuRefMaui.Core.IRC
     public class ChatQueue : ConcurrentQueue<IChatMessage>
     {
         private readonly ILogger<ChatQueue> _logger;
+
         public event Action<IChatMessage> OnEnqueue;
+        public event Action<IChatMessage> OnDequeue;
 
         public ChatQueue(ILogger<ChatQueue> logger)
         {
@@ -22,6 +24,17 @@ namespace osuRefMaui.Core.IRC
             OnEnqueue?.Invoke(message);
 
             _logger.LogDebug($"Message enqueued: {message}.");
+        }
+
+        public bool TryDequeue(out IChatMessage chatMessage)
+        {
+            if (base.TryDequeue(out chatMessage))
+            {
+                OnDequeue?.Invoke(chatMessage);
+                return true;
+            }
+
+            return false;
         }
     }
 }
