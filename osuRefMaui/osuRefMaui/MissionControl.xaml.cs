@@ -41,10 +41,12 @@ public partial class MissionControl : ContentPage
 			_chatQueue.OnDequeue += m =>
 			{
 				// Route chat labels to tab
-				Window.Dispatcher.Dispatch(() =>
+				Window.Dispatcher.Dispatch(async () =>
 				{
 					_tabHandler.RouteToTab(m);
 					UI_RecolorTab(m.Sender);
+
+					await UI_ScrollToBottom();
 				});
 			};
 
@@ -84,11 +86,25 @@ public partial class MissionControl : ContentPage
 	{
 		try
 		{
+			/*
+			 * Anything that needs to happen when a tab is clicked happens here.
+			 */
+			
 			// Reset button color to default when clicked. This clears the notification coloring.
 			var button = (Button)e.Element;
 			button.Clicked += (s, _) =>
 			{
-				Window.Dispatcher.Dispatch(() => { UI_RecolorTab(((Button)s)!.Text, true); });
+				Window.Dispatcher.Dispatch(async () =>
+				{
+					// Reset tab color to default
+					UI_RecolorTab(((Button)s)!.Text, true);
+					
+					// Scroll to bottom of scrollview
+					if (ChatScrollView.Children.Any())
+					{
+						await UI_ScrollToBottom();
+					}
+				});
 			};
 		}
 		catch (Exception exception)
@@ -96,6 +112,8 @@ public partial class MissionControl : ContentPage
 			_logger.LogCritical(exception, $"Something was added to the tab stack that was not a button: Element = {e.Element}");
 		}
 	}
+
+	private async Task UI_ScrollToBottom() => await ChatScrollView.ScrollToAsync(ChatScrollView.Children[^1], ScrollToPosition.End, true);
 
 	private void UI_SwapTab(string channel)
 	{
