@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.IRC;
 using osuRefMaui.Core.IRC.LoginInformation;
 
@@ -12,7 +11,7 @@ public partial class MainPage : ContentPage
     private readonly ConnectionHandler _connectionHandler;
 
     // IncomingMessageHandler constructed here but may not be used.
-    public MainPage(ILogger<MainPage> logger, MissionControl missionControl, 
+    public MainPage(MissionControl missionControl, 
         Credentials credentials, ConnectionHandler connectionHandler, IncomingMessageHandler incomingMessageHandler)
     {
         _missionControl = missionControl;
@@ -75,8 +74,14 @@ public partial class MainPage : ContentPage
         {
             // Push to next page once connected
             await Window.Navigation.PushModalAsync(_missionControl);
-            Login.IsEnabled = true;
         }
+        else
+        {
+            await DisplayAlert("Invalid Login", "Failed to connect to osu!Bancho. " +
+                                                "Please check your internet connection and credentials.", "Okay");
+        }
+
+        Login.IsEnabled = true;
     }
 
     private async void OnIRCPassButtonClicked(object sender, EventArgs e)
