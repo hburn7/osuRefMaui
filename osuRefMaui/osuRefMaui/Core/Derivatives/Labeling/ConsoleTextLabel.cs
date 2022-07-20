@@ -87,7 +87,7 @@ namespace osuRefMaui.Core.Derivatives.Labeling
 
 			fmt.Spans.Add(new ConsoleSpan
 			{
-				Text = $">> {_message.Channel}"
+				Text = $">> {_message.SourceName}"
 			});
 
 			return fmt;
