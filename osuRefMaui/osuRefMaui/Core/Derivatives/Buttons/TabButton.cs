@@ -12,10 +12,10 @@ namespace osuRefMaui.Core.Derivatives.Buttons
         /// <summary>
         /// Creates a new tab with the specified name
         /// </summary>
-        /// <param name="name"></param>
-        public TabButton(string name)
+        /// <param name="channel">The channel this tab is mapped to</param>
+        public TabButton(string channel)
         {
-            Text = name;
+            Text = channel;
             TextColor = TabPalette.TabText;
             FontFamily = TabPalette.TabTextFontFamily;
             BackgroundColor = TabPalette.TabBackground;
@@ -23,8 +23,8 @@ namespace osuRefMaui.Core.Derivatives.Buttons
             Padding = TabPalette.Padding;
             HorizontalOptions = TabPalette.HorizontalOptions;
             VerticalOptions = TabPalette.VerticalOptions;
-
-            // todo: possibly set Clicked event handler here
         }
     }
+
+    
 }
