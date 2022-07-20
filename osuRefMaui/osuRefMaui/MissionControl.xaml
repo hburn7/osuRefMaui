@@ -79,6 +79,7 @@
                                 Clicked="BtnAddChannel_Clicked" />
                     </HorizontalStackLayout>
                 </ScrollView>
+                <!--Chat label scroll view-->
                 <ScrollView x:Name="ChatScrollView"
                             VerticalOptions="StartAndExpand"
                             HorizontalOptions="Center"
@@ -86,8 +87,9 @@
                             Margin="50"
                             WidthRequest="500"
                             VerticalScrollBarVisibility="Never">
-                    <!-- All values in ChatStack are added programatically -->
-                    <VerticalStackLayout x:Name="ChatStack" />
+                    <!-- All VerticalStackLayouts in ChatScrollView are added programatically -->
+                    <!--Each of the VerticalStackLayouts contain labels as children, all are added programatically-->
+                    <!--<VerticalStackLayout x:Name="ChatStack" />-->
                 </ScrollView>
                 <!-- osu! main chat window text box -->
                 <Entry x:Name="ChatBox"
