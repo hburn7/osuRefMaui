@@ -10,7 +10,7 @@ namespace osuRefMaui.Core.IRC
 	{
 		public ChatMessage(IrcClient.IrcMessage message)
 		{
-			Source = message;
+			SourceMessage = message;
 
 			TimeStamp = DateTimeOffset.Now;
 			Command = IdentifyCommand();
@@ -21,17 +21,18 @@ namespace osuRefMaui.Core.IRC
 		}
 
 		public int? StatusCode { get; }
-		public IrcClient.IrcMessage Source { get; }
+		public IrcClient.IrcMessage SourceMessage { get; }
+		public string? SourceName => SourceMessage.Source?.Name;
 		public DateTimeOffset TimeStamp { get; }
 		public IrcCommand Command { get; }
 		public string Channel { get; }
 		public string Content { get; }
-		public string Sender { get; }
-		public bool IsFromPublicChannel => Sender.StartsWith("#");
+		public string? Sender { get; }
+		public bool IsFromPublicChannel => Sender?.StartsWith("#") ?? false;
 		public bool IsStatusCode(int statusCode) => Command == IrcCommand.Other && StatusCode == statusCode;
 		public override string ToString() => $"ChatMessage({TimeStamp}, {Command}, {Sender}: {Channel}, {Content})";
 
-		private IrcCommand IdentifyCommand() => Source.Command.ToLower() switch
+		private IrcCommand IdentifyCommand() => SourceMessage.Command.ToLower() switch
 		{
 			"logout" => IrcCommand.Quit,
 			"quit" => IrcCommand.Quit,
@@ -47,28 +48,28 @@ namespace osuRefMaui.Core.IRC
 			"mode" => IrcCommand.Mode,
 			"replaced" => IrcCommand.Replaced,
 			"" => IrcCommand.Empty,
-			_ when string.IsNullOrWhiteSpace(Source.Command) => IrcCommand.Null,
-			_ when !Source.Command.StartsWith("/") => IrcCommand.PrivateMessage,
+			_ when string.IsNullOrWhiteSpace(SourceMessage.Command) => IrcCommand.Null,
+			_ when !SourceMessage.Command.StartsWith("/") => IrcCommand.PrivateMessage,
 			_ => IrcCommand.Other
 		};
 
-		private string IdentifyChannel() => Source.Parameters[0];
+		private string IdentifyChannel() => SourceMessage.Parameters[0];
 
 		private string IdentifyContent()
 		{
-			if (Command == IrcCommand.PrivateMessage && (!Source.Source?.Name?.Equals("cho.ppy.sh") ?? false))
+			if (Command == IrcCommand.PrivateMessage && (!SourceMessage.Source?.Name?.Equals("cho.ppy.sh") ?? false))
 			{
-				return Source.Parameters[1];
+				return SourceMessage.Parameters[1];
 			}
 
-			return string.Join(" ", Source.Parameters.ToArray()[1..]).Trim();
+			return string.Join(" ", SourceMessage.Parameters.ToArray()[1..]).Trim();
 		}
 
-		private string IdentifySender() => Source.Source?.Name;
+		private string? IdentifySender() => Command == IrcCommand.PrivateMessage ? SourceMessage.Source?.Name : TabHandler.DefaultTabName;
 
 		private int? IdentifyStatusCode()
 		{
-			if (int.TryParse(Source.Command, out int code))
+			if (int.TryParse(SourceMessage.Command, out int code))
 			{
 				return code;
 			}
