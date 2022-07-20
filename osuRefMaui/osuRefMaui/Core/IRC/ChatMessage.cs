@@ -1,5 +1,4 @@
 ﻿#nullable enable
-
 using IrcDotNet;
 using osuRefMaui.Core.IRC.Interfaces;
 
@@ -67,7 +66,15 @@ namespace osuRefMaui.Core.IRC
 			return string.Join(" ", SourceMessage.Parameters.ToArray()[1..]).Trim();
 		}
 
-		private string? IdentifySender() => Command == IrcCommand.PrivateMessage ? SourceMessage.Source?.Name : TabHandler.DefaultTabName;
+		private string? IdentifySender()
+		{
+			if (SourceMessage.Source?.Name?.Equals("cho.ppy.sh") ?? false)
+			{
+				return TabHandler.DefaultTabName;
+			}
+
+			return Command == IrcCommand.PrivateMessage ? SourceMessage.Source?.Name : TabHandler.DefaultTabName;
+		}
 
 		private int? IdentifyStatusCode()
 		{
