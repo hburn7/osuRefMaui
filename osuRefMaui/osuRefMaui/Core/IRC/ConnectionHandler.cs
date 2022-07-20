@@ -7,15 +7,17 @@ namespace osuRefMaui.Core.IRC
 {
 	public class ConnectionHandler
 	{
-		private readonly ILogger<ConnectionHandler> _logger;
+		private readonly ChatQueue _chatQueue;
 		private readonly StandardIrcClient _client;
 		private readonly Credentials _credentials;
-		private readonly ChatQueue _chatQueue;
+		private readonly ILogger<ConnectionHandler> _logger;
+		private readonly TabHandler _tabHandler;
 
-		public ConnectionHandler(ILogger<ConnectionHandler> logger,
+		public ConnectionHandler(ILogger<ConnectionHandler> logger, TabHandler tabHandler,
 			StandardIrcClient client, Credentials credentials, ChatQueue chatQueue)
 		{
 			_logger = logger;
+			_tabHandler = tabHandler;
 			_client = client;
 			_credentials = credentials;
 			_chatQueue = chatQueue;
@@ -24,6 +26,14 @@ namespace osuRefMaui.Core.IRC
 
 			_client.Connected += (_, _) => _logger.LogInformation("Client connected");
 			_client.Disconnected += (_, _) => _logger.LogInformation("Client disconnected");
+
+			_tabHandler.OnTabCreated += channel =>
+			{
+				if (!channel.Equals(TabHandler.DefaultTabName))
+				{
+					JoinChannel(channel);
+				}
+			};
 		}
 
 		/// <summary>
@@ -95,6 +105,28 @@ namespace osuRefMaui.Core.IRC
 
 			// User is unable to access the internet
 			return false;
+		}
+
+		/// <summary>
+		///  Joins an IRC channel or queries a user.
+		/// </summary>
+		/// <param name="channel">Name of the channel (e.g. #osu) or name of user (e.g. Stage)</param>
+		public void JoinChannel(string channel)
+		{
+			if (!_client.IsConnected)
+			{
+				_logger.LogWarning($"Attempted to join channel {channel} but the client is disconnected.");
+				return;
+			}
+
+			if (channel.StartsWith("#"))
+			{
+				_client.Channels.Join(channel);
+			}
+			else
+			{
+				_client.QueryWho(channel);
+			}
 		}
 
 		/// <summary>
