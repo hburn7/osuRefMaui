@@ -27,6 +27,7 @@ public static class MauiProgram
 		// Handlers
 		builder.Services.AddSingleton<ConnectionHandler>();
 		builder.Services.AddSingleton<IncomingMessageHandler>();
+		builder.Services.AddSingleton<OutgoingMessageHandler>();
 		builder.Services.AddSingleton<TabHandler>();
 
 		return builder.Build();
