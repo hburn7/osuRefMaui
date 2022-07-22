@@ -11,13 +11,16 @@ public partial class MissionControl : ContentPage
 	private static bool _previouslyLoaded;
 	private readonly ChatQueue _chatQueue;
 	private readonly ILogger<MissionControl> _logger;
+	private readonly OutgoingMessageHandler _outgoingMessageHandler;
 	private readonly TabHandler _tabHandler;
 
-	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue)
+	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue,
+		OutgoingMessageHandler outgoingMessageHandler)
 	{
 		_logger = logger;
 		_tabHandler = tabHandler;
 		_chatQueue = chatQueue;
+		_outgoingMessageHandler = outgoingMessageHandler;
 
 		_previouslyLoaded = false;
 
@@ -192,7 +195,29 @@ public partial class MissionControl : ContentPage
 		_tabHandler.AddTab(channel, true);
 	}
 
-	private void ChatBox_Completed(object sender, EventArgs e) {}
+	private void ChatBox_Completed(object sender, EventArgs e)
+	{
+		var cmdHandler = new CommandHandler(((Entry)sender).Text);
+		if (cmdHandler.IsCustomCommand)
+		{
+			// Process custom commands
+			if (cmdHandler.CustomCommand == CustomCommand.Clear)
+			{
+				ChatScrollView.Content = new VerticalStackLayout();
+			}
+		}
+		else
+		{
+			// Process chat commands
+			var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
+			_outgoingMessageHandler.DispatchToIrc(message);
+
+			//todo: Listen to channel join / leave / etc. events and handle them in the UI.
+		}
+
+		((Entry)sender).Text = "";
+	}
+
 	private void cmdMpTimer120_Clicked(object sender, EventArgs e) {}
 	private void cmdMpTimer90_Clicked(object sender, EventArgs e) {}
 	private void cmdMpStart10_Clicked(object sender, EventArgs e) {}
