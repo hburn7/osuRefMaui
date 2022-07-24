@@ -64,6 +64,10 @@ public partial class MissionControl : ContentPage
 
 			_tabHandler.AddTab("#osu", false);
 			_tabHandler.AddTab("BanchoBot", false);
+			
+			_outgoingMessageHandler.Send("Joining #osu...", "#osu", false);
+			_outgoingMessageHandler.Send("Contacting BanchoBot...", "BanchoBot", false);
+			_outgoingMessageHandler.Send("!roll", "BanchoBot");
 
 			// Chat dequeue loop
 			Task.Run(async () =>
