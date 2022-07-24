@@ -223,6 +223,12 @@ public partial class MissionControl : ContentPage
 	{
 		string rawText = ((Entry)sender).Text;
 
+		if (string.IsNullOrWhiteSpace(rawText))
+		{
+			((Entry)sender).Text = "";
+			return;
+		}
+		
 		// Process /commands
 		if (rawText.StartsWith("/"))
 		{
