@@ -90,6 +90,7 @@ namespace osuRefMaui.Core.IRC
 							retries -= 1;
 						}
 
+						// Successful connection
 						_chatQueue.OnEnqueue -= StatusCheck;
 					}
 					catch (Exception)
@@ -119,6 +120,7 @@ namespace osuRefMaui.Core.IRC
 
 			if (channel.StartsWith("#"))
 			{
+				// Todo: This currently does not work.
 				_client.Channels.Join(channel);
 			}
 			else
