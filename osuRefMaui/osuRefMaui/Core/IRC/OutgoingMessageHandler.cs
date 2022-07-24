@@ -55,7 +55,8 @@ public class OutgoingMessageHandler
 	/// </summary>
 	/// <param name="text">The raw message to send. Should not be a slash command.</param>
 	/// <param name="channel">The chat channel to deliver to. Defaults to active tab.</param>
-	public void Send(string text, string channel = null)
+	/// <param name="dispatch">Whether to actually dispatch the content to IRC. If false, there is just a display.</param>
+	public void Send(string text, string channel = null, bool dispatch = true)
 	{
 		channel ??= _tabHandler.ActiveTab;
 		if (text.StartsWith("/"))
@@ -66,13 +67,22 @@ public class OutgoingMessageHandler
 		var message = new ChatMessage(new IrcClient.IrcMessage(_client, $"{_credentials.Username}!cho@ppy.sh",
 			"PRIVMSG", new List<string>(15) { channel, text }));
 
-		Send(message);
+		Send(message, dispatch);
 	}
 
-	public void Send(IChatMessage chatMessage)
+	/// <summary>
+	/// Sends the chat message to IRC (if specified) and enqueues it for display
+	/// </summary>
+	/// <param name="chatMessage"></param>
+	/// <param name="dispatch">Whether to actually dispatch the content to IRC. If false, there is just a display.</param>
+	public void Send(IChatMessage chatMessage, bool dispatch = true)
 	{
 		_logger.LogInformation($"Sending & enqueueing message {chatMessage.ToRawIrcString()}");
 		_chatQueue.Enqueue(chatMessage);
-		_client.SendRawMessage(chatMessage.ToRawIrcString());
+
+		if (dispatch)
+		{
+			_client.SendRawMessage(chatMessage.ToRawIrcString());
+		}
 	}
 }
