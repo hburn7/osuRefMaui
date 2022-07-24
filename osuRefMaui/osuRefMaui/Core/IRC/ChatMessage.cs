@@ -31,6 +31,7 @@ namespace osuRefMaui.Core.IRC
 		public string? Sender { get; }
 		public bool IsFromPublicChannel => Sender?.StartsWith("#") ?? false;
 		public bool IsStatusCode(int statusCode) => Command == IrcCommand.Other && StatusCode == statusCode;
+		public string ToRawIrcString() => $"{Command.ToString().ToUpper()} {string.Join(" ", SourceMessage.Parameters)}".Trim();
 		public override string ToString() => $"ChatMessage({TimeStamp}, {Command}, {Sender}: {Channel}, {Content})";
 
 		private IrcCommand IdentifyCommand() => SourceMessage.Command.ToLower() switch
@@ -38,8 +39,8 @@ namespace osuRefMaui.Core.IRC
 			"logout" => IrcCommand.Quit,
 			"quit" => IrcCommand.Quit,
 			"join" => IrcCommand.Join,
-			"privmsg" => IrcCommand.PrivateMessage,
-			"msg" => IrcCommand.PrivateMessage,
+			"privmsg" => IrcCommand.PrivMsg,
+			"msg" => IrcCommand.PrivMsg,
 			"query" => IrcCommand.Query,
 			"chat" => IrcCommand.Query,
 			"part" => IrcCommand.Part,
@@ -50,7 +51,7 @@ namespace osuRefMaui.Core.IRC
 			"replaced" => IrcCommand.Replaced,
 			"" => IrcCommand.Empty,
 			_ when string.IsNullOrWhiteSpace(SourceMessage.Command) => IrcCommand.Null,
-			_ when !SourceMessage.Command.StartsWith("/") => IrcCommand.PrivateMessage,
+			_ when !SourceMessage.Command.StartsWith("/") => IrcCommand.PrivMsg,
 			_ => IrcCommand.Other
 		};
 
@@ -58,7 +59,7 @@ namespace osuRefMaui.Core.IRC
 
 		private string IdentifyContent()
 		{
-			if (Command == IrcCommand.PrivateMessage && (!SourceMessage.Source?.Name?.Equals("cho.ppy.sh") ?? false))
+			if (Command == IrcCommand.PrivMsg && (!SourceMessage.Source?.Name?.Equals("cho.ppy.sh") ?? false))
 			{
 				return SourceMessage.Parameters[1];
 			}
@@ -73,7 +74,7 @@ namespace osuRefMaui.Core.IRC
 				return TabHandler.DefaultTabName;
 			}
 
-			return Command == IrcCommand.PrivateMessage ? SourceMessage.Source?.Name : TabHandler.DefaultTabName;
+			return Command == IrcCommand.PrivMsg ? SourceMessage.Source?.Name : TabHandler.DefaultTabName;
 		}
 
 		private int? IdentifyStatusCode()
