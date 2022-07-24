@@ -47,5 +47,10 @@ namespace osuRefMaui.Core.IRC.Interfaces
 		/// <param name="statusCode">Server provided code</param>
 		/// <returns></returns>
 		public bool IsStatusCode(int statusCode);
+		/// <summary>
+		/// Raw string used for StandardIrcClient.SendRawMessage()
+		/// </summary>
+		/// <returns></returns>
+		public string ToRawIrcString();
 	}
 }
