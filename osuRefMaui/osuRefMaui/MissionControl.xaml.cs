@@ -62,6 +62,9 @@ public partial class MissionControl : ContentPage
 			// Swap to default tab
 			UI_SwapTab(TabHandler.DefaultTabName);
 
+			_tabHandler.AddTab("#osu", false);
+			_tabHandler.AddTab("BanchoBot", false);
+
 			// Chat dequeue loop
 			Task.Run(async () =>
 			{
@@ -113,6 +116,9 @@ public partial class MissionControl : ContentPage
 			{
 				Window.Dispatcher.Dispatch(async () =>
 				{
+					// Disable chatbox when viewing the server tab
+					ChatBox.IsEnabled = _tabHandler.ActiveTab != TabHandler.DefaultTabName;
+
 					// Reset tab color to default
 					UI_RecolorTab(((Button)s)!.Text, true);
 
@@ -211,22 +217,33 @@ public partial class MissionControl : ContentPage
 
 	private void ChatBox_Completed(object sender, EventArgs e)
 	{
-		var cmdHandler = new CommandHandler(((Entry)sender).Text);
-		if (cmdHandler.IsCustomCommand)
+		string rawText = ((Entry)sender).Text;
+
+		// Process /commands
+		if (rawText.StartsWith("/"))
 		{
-			// Process custom commands
-			if (cmdHandler.CustomCommand == CustomCommand.Clear)
+			var cmdHandler = new CommandHandler(rawText);
+			if (cmdHandler.IsCustomCommand)
 			{
-				ChatScrollView.Content = new VerticalStackLayout();
+				// Process custom commands
+				if (cmdHandler.CustomCommand == CustomCommand.Clear)
+				{
+					ChatScrollView.Content = new VerticalStackLayout();
+				}
+			}
+			else
+			{
+				// Process chat commands
+				var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
+				_outgoingMessageHandler.Send(message);
+
+				//todo: Listen to channel join / leave / etc. events and handle them in the UI.
 			}
 		}
 		else
 		{
-			// Process chat commands
-			var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
-			_outgoingMessageHandler.DispatchToIrc(message);
-
-			//todo: Listen to channel join / leave / etc. events and handle them in the UI.
+			// Send "private message" to the current channel
+			_outgoingMessageHandler.Send(rawText);
 		}
 
 		((Entry)sender).Text = "";
