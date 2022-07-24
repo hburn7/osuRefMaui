@@ -93,12 +93,18 @@
                     <!--<VerticalStackLayout x:Name="ChatStack" />-->
                 </ScrollView>
                 <!-- osu! main chat window text box -->
+                <!-- Disabled by default as messages should not be sent in the default channel
+                It is recognized, however, that a user may wish to say /join #osu from this chat, 
+                so instead we could nullify any non-commands sent to this chat? For now it's safer 
+                to not do this as this adds more complexity. -->
                 <Entry
+                    x:Name="ChatBox"
                     WidthRequest="500"
                     HeightRequest="50"
                     VerticalOptions="End"
                     HorizontalOptions="Start"
                     BackgroundColor="#222"
+                    IsEnabled="False"
                     Completed="ChatBox_Completed" />
             </Grid>
         </Border>
