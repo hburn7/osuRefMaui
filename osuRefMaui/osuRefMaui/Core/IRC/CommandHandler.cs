@@ -17,7 +17,7 @@ public class CommandHandler : ICommandHandler
 	public CommandHandler(string rawInput)
 	{
 		_rawInput = rawInput;
-		
+
 		if (!_rawInput.StartsWith("/"))
 		{
 			throw new InvalidOperationException("No command to process.");
@@ -35,7 +35,7 @@ public class CommandHandler : ICommandHandler
 		_expectedArgs = IsCustomCommand ? ExpectedArgs(CustomCommand!.Value) : ExpectedArgs(Command!.Value);
 
 		ValidArgumentCount = ValidateArgCount();
-		
+
 		if (Command == null && CustomCommand == null)
 		{
 			throw new InvalidOperationException("Invalid command");
@@ -70,7 +70,7 @@ public class CommandHandler : ICommandHandler
 		"quit" or "disconnect" or "logout" => IrcCommand.Quit,
 		"part" or "leave" => IrcCommand.Part, // Also responsible for closing tabs
 		"join" or "add" => IrcCommand.Join,
-		"query" or "msg" or "message" or "privmsg" or "w" or "whisper" or "privatemessage" or "pm" or "r" => IrcCommand.PrivateMessage,
+		"query" or "msg" or "message" or "privmsg" or "w" or "whisper" or "privatemessage" or "pm" or "r" => IrcCommand.PrivMsg,
 		_ => null
 	};
 
@@ -85,7 +85,7 @@ public class CommandHandler : ICommandHandler
 		IrcCommand.Quit => 0,
 		IrcCommand.Join => 1,
 		IrcCommand.Part => 0,
-		IrcCommand.PrivateMessage => -1,
+		IrcCommand.PrivMsg => -1,
 		_ => throw new ArgumentOutOfRangeException(nameof(command), command, null)
 	};
 
