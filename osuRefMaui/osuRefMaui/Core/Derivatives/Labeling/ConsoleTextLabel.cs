@@ -29,7 +29,7 @@ namespace osuRefMaui.Core.Derivatives.Labeling
 
 		private FormattedString GetFormattedString() => _message.Command switch
 		{
-			IrcCommand.PrivateMessage => GetMessageFormattedString(),
+			IrcCommand.PrivMsg => GetMessageFormattedString(),
 			_ => GetCommandFormattedString()
 		};
 
@@ -40,7 +40,7 @@ namespace osuRefMaui.Core.Derivatives.Labeling
 			// Add current time
 			fmt.Spans.Add(new ConsoleSpan
 			{
-				Text = _message.TimeStamp.ToString("HH:mm:ss"),
+				Text = _message.TimeStamp.ToString("HH:mm:ss") + " ",
 				TextColor = ChatPalette.ConsoleSpanTimeColor
 			});
 
@@ -73,7 +73,7 @@ namespace osuRefMaui.Core.Derivatives.Labeling
 			// Add current time
 			fmt.Spans.Add(new ConsoleSpan
 			{
-				Text = _message.TimeStamp.ToString("HH:mm:ss"),
+				Text = _message.TimeStamp.ToString("HH:mm:ss") + " ",
 				TextColor = ChatPalette.ConsoleSpanTimeColor
 			});
 
