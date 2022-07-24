@@ -238,7 +238,10 @@ public partial class MissionControl : ContentPage
 				// Process custom commands
 				if (cmdHandler.CustomCommand == CustomCommand.Clear)
 				{
-					ChatScrollView.Content = new VerticalStackLayout();
+					if(_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
+					{
+						chatStack.Children.Clear();
+					}
 				}
 			}
 			else
