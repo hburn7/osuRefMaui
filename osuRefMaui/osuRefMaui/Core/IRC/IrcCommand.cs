@@ -10,7 +10,7 @@
 		Me,
 		Mode,
 		Replaced,
-		PrivateMessage,
+		PrivMsg,
 		Empty,
 		Null,
 		Other
