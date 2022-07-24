@@ -43,14 +43,22 @@ namespace osuRefMaui.Core.IRC
 		/// <param name="chatMessage"></param>
 		public void RouteToTab(IChatMessage chatMessage)
 		{
-			string channel = chatMessage.IsFromPublicChannel ? chatMessage.Channel : chatMessage.Sender;
+			string channel;
+			if (chatMessage.IsFromPublicChannel || chatMessage.Sender == _credentials.Username)
+			{
+				channel = chatMessage.Channel;
+			}
+			else
+			{
+				channel = chatMessage.Sender;
+			}
 
 			// Route to tab
 			var label = new ConsoleTextLabel(chatMessage);
 
 			bool routeToDefault = chatMessage.Sender == "cho.ppy.sh";
 
-			if (!routeToDefault && chatMessage.Command == IrcCommand.PrivateMessage)
+			if (!routeToDefault && chatMessage.Command == IrcCommand.PrivMsg)
 			{
 				if (!TryGetChatStack(channel, out _))
 				{
