@@ -177,7 +177,7 @@
                                   IsChecked="True"
                                   CheckedChanged="filterCheckBoxBanchoPing_CheckChanged" />
                         <CheckBox x:Name="cbFilterBanchoSlotMove"
-                                  IsChecked="True"
+                                  IsChecked="False"
                                   CheckedChanged="filterCheckBoxBanchoSlotMove_CheckChanged" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="13"

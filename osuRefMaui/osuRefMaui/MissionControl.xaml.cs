@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.Coloring;
 using osuRefMaui.Core.Derivatives.Buttons;
 using osuRefMaui.Core.IRC;
+using osuRefMaui.Core.IRC.Filtering;
 
 // ReSharper disable RedundantExtendsListEntry
 namespace osuRefMaui;
@@ -10,17 +11,19 @@ public partial class MissionControl : ContentPage
 {
 	private static bool _previouslyLoaded;
 	private readonly ChatQueue _chatQueue;
+	private readonly IrcFilter _filter;
 	private readonly ILogger<MissionControl> _logger;
 	private readonly OutgoingMessageHandler _outgoingMessageHandler;
 	private readonly TabHandler _tabHandler;
 
 	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue,
-		OutgoingMessageHandler outgoingMessageHandler)
+		OutgoingMessageHandler outgoingMessageHandler, IrcFilter filter)
 	{
 		_logger = logger;
 		_tabHandler = tabHandler;
 		_chatQueue = chatQueue;
 		_outgoingMessageHandler = outgoingMessageHandler;
+		_filter = filter;
 
 		_previouslyLoaded = false;
 
@@ -33,6 +36,9 @@ public partial class MissionControl : ContentPage
 	{
 		if (!_previouslyLoaded)
 		{
+			// Setup chat filter
+			InitFilter();
+
 			// Event handler which sets child's clicked event handler which then resets the color of the tab
 			ChatTabHorizontalStack.ChildAdded += ChatTabHorizontalStackOnChildAdded;
 
@@ -77,6 +83,14 @@ public partial class MissionControl : ContentPage
 		}
 
 		_previouslyLoaded = true;
+	}
+
+	private void InitFilter()
+	{
+		_filter.FilterJoin = cbFilterBanchoJoin.IsChecked;
+		_filter.FilterQuit = cbFilterBanchoQuit.IsChecked;
+		_filter.FilterPing = cbFilterBanchoPing.IsChecked;
+		_filter.FilterSlotMove = cbFilterBanchoSlotMove.IsChecked;
 	}
 
 	/// <summary>
@@ -223,8 +237,28 @@ public partial class MissionControl : ContentPage
 	private void cmdMpStart10_Clicked(object sender, EventArgs e) {}
 	private void cmdMpStart5_Clicked(object sender, EventArgs e) {}
 	private void cmdMpAbort_Clicked(object sender, EventArgs e) {}
-	private void filterCheckBoxBanchoJoin_CheckChanged(object sender, EventArgs e) {}
-	private void filterCheckBoxBanchoQuit_CheckChanged(object sender, EventArgs e) {}
-	private void filterCheckBoxBanchoPing_CheckChanged(object sender, EventArgs e) {}
-	private void filterCheckBoxBanchoSlotMove_CheckChanged(object sender, EventArgs e) {}
+
+	private void filterCheckBoxBanchoJoin_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterJoin = isChecked;
+	}
+
+	private void filterCheckBoxBanchoQuit_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterQuit = isChecked;
+	}
+
+	private void filterCheckBoxBanchoPing_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterPing = isChecked;
+	}
+
+	private void filterCheckBoxBanchoSlotMove_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterSlotMove = isChecked;
+	}
 }

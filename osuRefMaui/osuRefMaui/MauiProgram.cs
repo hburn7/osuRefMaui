@@ -1,6 +1,7 @@
 ﻿using IrcDotNet;
 using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.IRC;
+using osuRefMaui.Core.IRC.Filtering;
 using osuRefMaui.Core.IRC.LoginInformation;
 
 namespace osuRefMaui;
@@ -23,6 +24,8 @@ public static class MauiProgram
 
 		builder.Services.AddSingleton<ChatQueue>();
 		builder.Services.AddSingleton(_ => CredentialsHandler.DeserializeCredentials());
+
+		builder.Services.AddSingleton<IrcFilter>();
 
 		// Handlers
 		builder.Services.AddSingleton<ConnectionHandler>();
