@@ -100,11 +100,12 @@
                 <Entry
                     x:Name="ChatBox"
                     WidthRequest="500"
-                    HeightRequest="50"
+                    HeightRequest="30"
                     VerticalOptions="End"
                     HorizontalOptions="Start"
                     BackgroundColor="#222"
                     IsEnabled="False"
+                    Placeholder="Send a message..."
                     Completed="ChatBox_Completed" />
             </Grid>
         </Border>
