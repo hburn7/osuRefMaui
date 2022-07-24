@@ -24,7 +24,7 @@ public class IrcFilterProcessor
 
 	private bool FilterSlotMove()
 	{
-		if (_chatMessage.Command == IrcCommand.PrivateMessage)
+		if (_chatMessage.Command == IrcCommand.PrivMsg)
 		{
 			if (_chatMessage.Sender!.Equals("BanchoBot"))
 			{
