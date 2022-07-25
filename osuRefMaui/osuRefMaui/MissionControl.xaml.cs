@@ -50,10 +50,10 @@ public partial class MissionControl : ContentPage
 			_chatQueue.OnDequeue += m =>
 			{
 				// Route chat labels to tab
-				Window.Dispatcher.Dispatch(async () =>
+				Window.Dispatcher.Dispatch(() =>
 				{
 					_tabHandler.RouteToTab(m);
-					UI_RecolorTab(m.Sender);
+					UI_RecolorTab(m.IsFromPublicChannel ? m.Channel : m.Sender);
 				});
 			};
 
@@ -66,20 +66,14 @@ public partial class MissionControl : ContentPage
 			 *
 			 * This way, the auto scroller works in all cases.
 			 */
-			_chatQueue.OnPersistentEmpty += () =>
-			{
-				Window.Dispatcher.Dispatch(async () =>
-				{
-					await UI_ScrollToBottom();
-				});
-			};
+			_chatQueue.OnPersistentEmpty += () => { Window.Dispatcher.Dispatch(async () => { await UI_ScrollToBottom(); }); };
 
 			// Swap to default tab
 			UI_SwapTab(TabHandler.DefaultTabName);
 
 			_tabHandler.AddTab("#osu", false);
 			_tabHandler.AddTab("BanchoBot", false);
-			
+
 			_outgoingMessageHandler.Send("Joining #osu...", "#osu", false);
 			_outgoingMessageHandler.Send("Contacting BanchoBot...", "BanchoBot", false);
 			_outgoingMessageHandler.Send("!roll", "BanchoBot");
@@ -135,16 +129,13 @@ public partial class MissionControl : ContentPage
 			{
 				Window.Dispatcher.Dispatch(async () =>
 				{
-					// Disable chatbox when viewing the server tab
-					ChatBox.IsEnabled = _tabHandler.ActiveTab != TabHandler.DefaultTabName;
-
 					// Reset tab color to default
 					UI_RecolorTab(((Button)s)!.Text, true);
 
-					// Scroll to bottom of scrollview
+					// Force scroll to bottom of scrollview
 					if (ChatScrollView.Children.Any())
 					{
-						await UI_ScrollToBottom();
+						await UI_ScrollToBottom(true);
 					}
 				});
 			};
@@ -155,12 +146,19 @@ public partial class MissionControl : ContentPage
 		}
 	}
 
-	private async Task UI_ScrollToBottom()
+	/// <summary>
+	///  Scrolls to the bottom of the current chat view.
+	/// </summary>
+	/// <param name="force">Whether to ignore auto-scrolling delta and force scroll to bottom</param>
+	private async Task UI_ScrollToBottom(bool force = false)
 	{
 		var endChild = (VisualElement)ChatScrollView.Children[^1];
+
+		// The amount of space, in device-independent units, the user would scroll up to avoid the auto scroller
+		// from returning them to the bottom. This way, a user can scroll up in the chat without being interrupted.
 		double delta = ChatScrollView.GetScrollPositionForElement(endChild, ScrollToPosition.End).Y - ChatScrollView.ScrollY;
 
-		if (delta > 500)
+		if (!force && delta > 500)
 		{
 			return;
 		}
@@ -177,6 +175,13 @@ public partial class MissionControl : ContentPage
 
 		ChatScrollView.Content = chatStack;
 		_tabHandler.ActiveTab = channel;
+
+		// Force scroll to bottom whenever switching tabs
+		Window.Dispatcher.Dispatch(async () =>
+		{
+			await Task.Delay(500);
+			await UI_ScrollToBottom(true);
+		});
 	}
 
 	private void UI_AddTab(string channel, bool manuallyAdded) => Window.Dispatcher.Dispatch(() =>
@@ -231,6 +236,11 @@ public partial class MissionControl : ContentPage
 		string channel = await DisplayPromptAsync("Add Channel",
 			"Type the channel or username to add.", placeholder: "#osu");
 
+		if (string.IsNullOrWhiteSpace(channel))
+		{
+			return;
+		}
+
 		_tabHandler.AddTab(channel, true);
 	}
 
@@ -243,7 +253,7 @@ public partial class MissionControl : ContentPage
 			((Entry)sender).Text = "";
 			return;
 		}
-		
+
 		// Process /commands
 		if (rawText.StartsWith("/"))
 		{
@@ -253,7 +263,7 @@ public partial class MissionControl : ContentPage
 				// Process custom commands
 				if (cmdHandler.CustomCommand == CustomCommand.Clear)
 				{
-					if(_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
+					if (_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
 					{
 						chatStack.Children.Clear();
 					}
@@ -261,7 +271,7 @@ public partial class MissionControl : ContentPage
 			}
 			else
 			{
-				// Process chat commands
+				// Process chat commands (/part, /quit, /logout, etc.)
 				var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
 				_outgoingMessageHandler.Send(message);
 
