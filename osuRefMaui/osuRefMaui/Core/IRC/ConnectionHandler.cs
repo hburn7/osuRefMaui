@@ -120,8 +120,7 @@ namespace osuRefMaui.Core.IRC
 
 			if (channel.StartsWith("#"))
 			{
-				// Todo: This currently does not work.
-				_client.Channels.Join(channel);
+				_client.SendRawMessage($"JOIN {channel}");
 			}
 			else
 			{
