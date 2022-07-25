@@ -29,8 +29,8 @@ namespace osuRefMaui.Core.IRC
 		public string Channel { get; }
 		public string Content { get; }
 		public string? Sender { get; }
-		public bool IsFromPublicChannel => Sender?.StartsWith("#") ?? false;
-		public bool IsStatusCode(int statusCode) => Command == IrcCommand.Other && StatusCode == statusCode;
+		public bool IsFromPublicChannel => Channel.StartsWith("#");
+		public bool IsStatusCode(int statusCode) => StatusCode == statusCode;
 		public string ToRawIrcString() => $"{Command.ToString().ToUpper()} {string.Join(" ", SourceMessage.Parameters)}".Trim();
 		public override string ToString() => $"ChatMessage({TimeStamp}, {Command}, {Sender}: {Channel}, {Content})";
 
