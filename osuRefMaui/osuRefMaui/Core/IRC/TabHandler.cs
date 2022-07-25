@@ -56,9 +56,9 @@ namespace osuRefMaui.Core.IRC
 			// Route to tab
 			var label = new ConsoleTextLabel(chatMessage);
 
-			bool routeToDefault = chatMessage.Sender == "cho.ppy.sh";
+			bool routeToDefault = chatMessage.Channel == DefaultTabName;
 
-			if (!routeToDefault && chatMessage.Command == IrcCommand.PrivMsg)
+			if (!routeToDefault)
 			{
 				if (!TryGetChatStack(channel, out _))
 				{
