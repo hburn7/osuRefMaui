@@ -68,7 +68,7 @@ public class CommandHandler : ICommandHandler
 	private IrcCommand? ResolveCommand() => _rawCommand.ToLower() switch
 	{
 		"quit" or "disconnect" or "logout" => IrcCommand.Quit,
-		"part" or "leave" => IrcCommand.Part, // Also responsible for closing tabs
+		"part" or "leave" or "close" => IrcCommand.Part, // Also responsible for closing tabs
 		"join" or "add" => IrcCommand.Join,
 		"query" or "msg" or "message" or "privmsg" or "w" or "whisper" or "privatemessage" or "pm" or "r" => IrcCommand.PrivMsg,
 		_ => null
