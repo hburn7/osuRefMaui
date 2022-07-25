@@ -6,6 +6,7 @@ public class IrcFilterProcessor
 {
 	private readonly IChatMessage _chatMessage;
 	private readonly IrcFilter _filter;
+	private readonly int[] _spamCodes = { 353 };
 
 	public IrcFilterProcessor(IrcFilter filter, IChatMessage chatMessage)
 	{
@@ -13,7 +14,8 @@ public class IrcFilterProcessor
 		_chatMessage = chatMessage;
 	}
 
-	public bool IsFiltered() => (_filter.FilterJoin && FilterJoin()) ||
+	public bool IsFiltered() => IsSpam() ||
+	                            (_filter.FilterJoin && FilterJoin()) ||
 	                            (_filter.FilterQuit && FilterQuit()) ||
 	                            (_filter.FilterPing && FilterPing()) ||
 	                            (_filter.FilterSlotMove && FilterSlotMove());
@@ -30,6 +32,20 @@ public class IrcFilterProcessor
 			{
 				// todo: convert to regex -- this is just a quick implementation
 				return _chatMessage.Content.Contains("moved to slot", StringComparison.OrdinalIgnoreCase);
+			}
+		}
+
+		return false;
+	}
+
+	// Spam / status code filters
+	private bool IsSpam()
+	{
+		foreach (int code in _spamCodes)
+		{
+			if (_chatMessage.IsStatusCode(code))
+			{
+				return true;
 			}
 		}
 
