@@ -71,13 +71,13 @@ public class OutgoingMessageHandler
 	}
 
 	/// <summary>
-	/// Sends the chat message to IRC (if specified) and enqueues it for display
+	///  Sends the chat message to IRC (if specified) and enqueues it for display
 	/// </summary>
 	/// <param name="chatMessage"></param>
 	/// <param name="dispatch">Whether to actually dispatch the content to IRC. If false, there is just a display.</param>
 	public void Send(IChatMessage chatMessage, bool dispatch = true)
 	{
-		_logger.LogInformation($"Sending & enqueueing message {chatMessage.ToRawIrcString()}");
+		_logger.LogInformation($"Sending & enqueueing message '{chatMessage.ToRawIrcString()}'");
 		_chatQueue.Enqueue(chatMessage);
 
 		if (dispatch)
