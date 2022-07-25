@@ -104,7 +104,6 @@
                     VerticalOptions="End"
                     HorizontalOptions="Start"
                     BackgroundColor="#222"
-                    IsEnabled="False"
                     Placeholder="Send a message..."
                     Completed="ChatBox_Completed" />
             </Grid>
