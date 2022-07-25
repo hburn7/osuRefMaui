@@ -54,7 +54,22 @@ public partial class MissionControl : ContentPage
 				{
 					_tabHandler.RouteToTab(m);
 					UI_RecolorTab(m.Sender);
+				});
+			};
 
+			/*
+			 * Scroll to bottom whenever the queue has remain emptied for a short time.
+			 * This is for situations where a batch of messages 
+			 * are rapidly dequeued whilst the auto scroller is attempting
+			 * to scroll to bottom, thus causing the auto scroller to not
+			 * go to the bottom.
+			 *
+			 * This way, the auto scroller works in all cases.
+			 */
+			_chatQueue.OnPersistentEmpty += () =>
+			{
+				Window.Dispatcher.Dispatch(async () =>
+				{
 					await UI_ScrollToBottom();
 				});
 			};
