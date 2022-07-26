@@ -185,6 +185,9 @@
                         <CheckBox x:Name="cbFilterBanchoSlotMove"
                                   IsChecked="False"
                                   CheckedChanged="filterCheckBoxBanchoSlotMove_CheckChanged" />
+                        <CheckBox x:Name="cbFilterBanchoTeamChange"
+                                  IsChecked="False"
+                                  CheckedChanged="filterCheckBoxBanchoTeamChange_CheckChanged" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="13"
                                          Margin="-10, -3.5"
@@ -194,6 +197,7 @@
                         <Label Text="Bancho Quit" />
                         <Label Text="Bancho Ping" />
                         <Label Text="Bancho Slot Move" />
+                        <Label Text="Bancho Team Change" />
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
             </Grid>

@@ -107,6 +107,7 @@ public partial class MissionControl : ContentPage
 		_filter.FilterQuit = cbFilterBanchoQuit.IsChecked;
 		_filter.FilterPing = cbFilterBanchoPing.IsChecked;
 		_filter.FilterSlotMove = cbFilterBanchoSlotMove.IsChecked;
+		_filter.FilterTeamChange = cbFilterBanchoTeamChange.IsChecked;
 	}
 
 	/// <summary>
@@ -315,5 +316,10 @@ public partial class MissionControl : ContentPage
 	{
 		bool isChecked = ((CheckBox)sender).IsChecked;
 		_filter.FilterSlotMove = isChecked;
+	}
+	private void filterCheckBoxBanchoTeamChange_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterTeamChange = isChecked;
 	}
 }

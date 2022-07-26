@@ -6,4 +6,5 @@ public class IrcFilter
 	public bool FilterQuit { get; set; }
 	public bool FilterPing { get; set; }
 	public bool FilterSlotMove { get; set; }
+	public bool FilterTeamChange { get; set; }
 }
