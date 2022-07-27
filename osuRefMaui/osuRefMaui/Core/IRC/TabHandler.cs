@@ -21,17 +21,14 @@ namespace osuRefMaui.Core.IRC
 		}
 
 		public string ActiveTab { get; set; } = DefaultTabName;
-		/// The main purpose of these Actions is to
-		/// give a notification to the UI thread
-		/// so it knows to create the visuals.
-		/// <summary>
-		///  Fired when the program deletes a tab
-		/// </summary>
-		public event Action<string> OnTabChatCleared;
 		/// <summary>
 		///  Fired when a new tab is created. Bool indicates whether the tab was manually added.
 		/// </summary>
 		public event Action<string, bool> OnTabCreated;
+		/// <summary>
+		///  Fired whenever a chat tab is removed or closed.
+		/// </summary>
+		public event Action<string> OnTabRemoved;
 
 		public bool TryGetChatStack(string channel, out VerticalStackLayout chatStack) =>
 			_tabChatStacks.TryGetValue(channel, out chatStack);
@@ -53,6 +50,11 @@ namespace osuRefMaui.Core.IRC
 				channel = chatMessage.Sender;
 			}
 
+			if (channel == null)
+			{
+				return;
+			}
+
 			// Route to tab
 			var label = new ConsoleTextLabel(chatMessage);
 
@@ -64,6 +66,13 @@ namespace osuRefMaui.Core.IRC
 				{
 					_logger.LogInformation("No tab to route message to. Creating...");
 
+					// Do not add messages from public channels if there isn't a tab for them
+					// as they have likely been closed and the incoming messages need to be voided.
+					if (chatMessage.IsFromPublicChannel && !chatMessage.Channel.StartsWith("#mp_"))
+					{
+						return;
+					}
+					
 					// Create the tab if it doesn't exist.
 					AddTab(channel, false);
 				}
@@ -110,16 +119,19 @@ namespace osuRefMaui.Core.IRC
 		}
 
 		/// <summary>
-		///  Clears a chat stack from memory.
+		///  Removes a tab from memory and fires events necessary for other classes
+		///  to take action whenever a tab is removed
 		/// </summary>
-		private void ClearStack(string channel)
+		/// <param name="channel"></param>
+		public void RemoveTab(string channel)
 		{
 			if (!_tabChatStacks.TryRemove(channel, out _))
 			{
-				throw new InvalidOperationException("No tab to remove with the given name.");
+				_logger.LogInformation("Attempted to remove chatStack that does not exist");
 			}
 
-			OnTabChatCleared?.Invoke(channel);
+			_logger.LogInformation($"Removed tab {channel}, firing event");
+			OnTabRemoved?.Invoke(channel);
 		}
 	}
 }

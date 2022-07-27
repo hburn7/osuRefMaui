@@ -1,3 +1,4 @@
+using IrcDotNet;
 using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.Coloring;
 using osuRefMaui.Core.Derivatives.Buttons;
@@ -11,17 +12,19 @@ public partial class MissionControl : ContentPage
 {
 	private static bool _previouslyLoaded;
 	private readonly ChatQueue _chatQueue;
+	private readonly StandardIrcClient _client;
 	private readonly IrcFilter _filter;
 	private readonly ILogger<MissionControl> _logger;
 	private readonly OutgoingMessageHandler _outgoingMessageHandler;
 	private readonly TabHandler _tabHandler;
 
 	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue,
-		OutgoingMessageHandler outgoingMessageHandler, IrcFilter filter)
+		StandardIrcClient client, OutgoingMessageHandler outgoingMessageHandler, IrcFilter filter)
 	{
 		_logger = logger;
 		_tabHandler = tabHandler;
 		_chatQueue = chatQueue;
+		_client = client;
 		_outgoingMessageHandler = outgoingMessageHandler;
 		_filter = filter;
 
@@ -43,6 +46,7 @@ public partial class MissionControl : ContentPage
 			ChatTabHorizontalStack.ChildAdded += ChatTabHorizontalStackOnChildAdded;
 
 			_tabHandler.OnTabCreated += UI_AddTab;
+			_tabHandler.OnTabRemoved += UI_CloseTab;
 
 			// Create default tab
 			_tabHandler.AddTab(TabHandler.DefaultTabName, false);
@@ -52,8 +56,15 @@ public partial class MissionControl : ContentPage
 				// Route chat labels to tab
 				Window.Dispatcher.Dispatch(() =>
 				{
+					string channel = m.IsFromPublicChannel ? m.Channel : m.Sender;
+
+					if (channel == null)
+					{
+						return;
+					}
+					
 					_tabHandler.RouteToTab(m);
-					UI_RecolorTab(m.IsFromPublicChannel ? m.Channel : m.Sender);
+					UI_RecolorTab(channel);
 				});
 			};
 
@@ -209,7 +220,7 @@ public partial class MissionControl : ContentPage
 
 		try
 		{
-			var button = (Button)ChatTabHorizontalStack.First(x => ((Button)x).Text.Equals(channel, StringComparison.OrdinalIgnoreCase));
+			var button = GetUITab(channel);
 
 			if (resetToDefault)
 			{
@@ -232,6 +243,24 @@ public partial class MissionControl : ContentPage
 		catch (InvalidOperationException) {}
 	}
 
+	private void UI_CloseTab(string channel)
+	{
+		var button = GetUITab(channel);
+		int index = ChatTabHorizontalStack.IndexOf(button);
+		if (ChatTabHorizontalStack.Remove(button))
+		{
+			if (channel == _tabHandler.ActiveTab && index > 0)
+			{
+				// Fallback to previous tab
+				var fallbackButton = (Button)ChatTabHorizontalStack.Children[index];
+				UI_SwapTab(fallbackButton.Text);
+			}
+		}
+	}
+
+	private Button GetUITab(string channel) =>
+		(Button)ChatTabHorizontalStack.First(x => ((Button)x).Text.Equals(channel, StringComparison.OrdinalIgnoreCase));
+
 	private async void BtnAddChannel_Clicked(object sender, EventArgs e)
 	{
 		string channel = await DisplayPromptAsync("Add Channel",
@@ -251,7 +280,7 @@ public partial class MissionControl : ContentPage
 
 		if (string.IsNullOrWhiteSpace(rawText))
 		{
-			((Entry)sender).Text = "";
+			UI_ClearChatBox((Entry)sender);
 			return;
 		}
 
@@ -276,6 +305,17 @@ public partial class MissionControl : ContentPage
 				var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
 				_outgoingMessageHandler.Send(message);
 
+				switch (cmdHandler.Command)
+				{
+					case IrcCommand.Join:
+						_tabHandler.AddTab(message.Channel, true);
+						break;
+					case IrcCommand.Part:
+						// UI close tab -- outgoing message handler takes care of the internals
+						_tabHandler.RemoveTab(message.Channel);
+						break;
+				}
+
 				//todo: Listen to channel join / leave / etc. events and handle them in the UI.
 			}
 		}
@@ -285,9 +325,10 @@ public partial class MissionControl : ContentPage
 			_outgoingMessageHandler.Send(rawText);
 		}
 
-		((Entry)sender).Text = "";
+		UI_ClearChatBox((Entry)sender);
 	}
 
+	private void UI_ClearChatBox(Entry entry) => entry.Text = "";
 	private void cmdMpTimer120_Clicked(object sender, EventArgs e) {}
 	private void cmdMpTimer90_Clicked(object sender, EventArgs e) {}
 	private void cmdMpStart10_Clicked(object sender, EventArgs e) {}
@@ -317,6 +358,7 @@ public partial class MissionControl : ContentPage
 		bool isChecked = ((CheckBox)sender).IsChecked;
 		_filter.FilterSlotMove = isChecked;
 	}
+
 	private void filterCheckBoxBanchoTeamChange_CheckChanged(object sender, EventArgs e)
 	{
 		bool isChecked = ((CheckBox)sender).IsChecked;
