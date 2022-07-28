@@ -6,6 +6,7 @@ using osuRefMaui.Core.IRC.Filtering;
 using osuRefMaui.Core.IRC.LoginInformation;
 #if WINDOWS
 using WinUIEx;
+using Microsoft.Maui.LifecycleEvents;
 #endif
 
 namespace osuRefMaui;
