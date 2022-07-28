@@ -141,6 +141,10 @@
                         Style="{StaticResource ButtonDanger}"
                         Text="!mp start 5"
                         Clicked="cmdMpStart5_Clicked" />
+                <Button x:Name="cmdMpAbortTimer"
+                        Style="{StaticResource ButtonDanger}"
+                        Text="!mp aborttimer"
+                        Clicked="CmdMpAbortTimer_OnClicked" />
                 <Button x:Name="cmdMpAbort"
                         Style="{StaticResource ButtonDanger}"
                         HorizontalOptions="End"
@@ -175,7 +179,7 @@
                                          VerticalOptions="Start">
                         <CheckBox x:Name="cbFilterBanchoJoin"
                                   IsChecked="True"
-                                  CheckedChanged="filterCheckBoxBanchoJoin_CheckChanged" /> 
+                                  CheckedChanged="filterCheckBoxBanchoJoin_CheckChanged" />
                         <CheckBox x:Name="cbFilterBanchoPart"
                                   IsChecked="True"
                                   CheckedChanged="filterCheckBoxBanchoPart_CheckChanged" />
