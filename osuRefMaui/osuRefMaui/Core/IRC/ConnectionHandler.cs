@@ -29,7 +29,7 @@ namespace osuRefMaui.Core.IRC
 			{
 				if (!channel.Equals(TabHandler.DefaultTabName))
 				{
-					JoinChannel(channel);
+					JoinChannelOrOpenDM(channel);
 				}
 			};
 		}
@@ -110,7 +110,7 @@ namespace osuRefMaui.Core.IRC
 		///  Joins an IRC channel or queries a user.
 		/// </summary>
 		/// <param name="channel">Name of the channel (e.g. #osu) or name of user (e.g. Stage)</param>
-		public void JoinChannel(string channel)
+		public void JoinChannelOrOpenDM(string channel)
 		{
 			if (!_client.IsConnected)
 			{

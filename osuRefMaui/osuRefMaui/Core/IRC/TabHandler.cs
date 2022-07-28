@@ -72,14 +72,14 @@ namespace osuRefMaui.Core.IRC
 			{
 				if (!TryGetChatStack(channel, out _))
 				{
-					_logger.LogInformation("No tab to route message to. Creating...");
-
 					// Do not add messages from public channels if there isn't a tab for them
 					// as they have likely been closed and the incoming messages need to be voided.
 					if (chatMessage.IsFromPublicChannel && !chatMessage.Channel.StartsWith("#mp_"))
 					{
 						return;
 					}
+
+					_logger.LogInformation("No tab to route message to. Creating...");
 
 					// Create the tab if it doesn't exist.
 					AddTab(channel, false);
