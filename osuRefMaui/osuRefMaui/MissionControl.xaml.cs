@@ -305,20 +305,21 @@ public partial class MissionControl : ContentPage
 
 					switch (cmdHandler.Command)
 					{
+						case IrcCommand.PrivMsg:
 						case IrcCommand.Join:
 							if (cmdHandler.Args.Any())
 							{
-								foreach (string channel in cmdHandler.Args)
+								ActUponArgs(cmdHandler.Args, arg =>
 								{
 									try
 									{
-										_tabHandler.AddTab(channel, true);
+										_tabHandler.AddTab(arg, true);
 									}
 									catch (Exception exception)
 									{
-										_logger.LogWarning(exception, "Failed to close tab");
+										_logger.LogWarning(exception, $"Failed to add tab {arg}");
 									}
-								}
+								});
 							}
 							else
 							{
@@ -330,17 +331,17 @@ public partial class MissionControl : ContentPage
 							// UI close tab -- outgoing message handler takes care of the internals
 							if (cmdHandler.Args.Any())
 							{
-								foreach (string channel in cmdHandler.Args)
+								ActUponArgs(cmdHandler.Args, arg =>
 								{
 									try
 									{
-										_tabHandler.RemoveTab(channel);
+										_tabHandler.RemoveTab(arg);
 									}
 									catch (Exception exception)
 									{
-										_logger.LogWarning(exception, "Failed to close tab");
+										_logger.LogWarning(exception, $"Failed to close tab {arg}");
 									}
-								}
+								});
 							}
 							else
 							{
@@ -369,6 +370,16 @@ public partial class MissionControl : ContentPage
 		UI_ClearChatBox((Entry)sender);
 	}
 
+	/// <summary>
+	/// Acts upon each argument with the specified action
+	/// </summary>
+	private void ActUponArgs(string[] args, Action<string> action)
+	{
+		foreach (string arg in args)
+		{
+			action.Invoke(arg);
+		}
+	}
 	private void DisplayInvalidCommandAlert() => DisplayAlert("Invalid Command", "That command is not supported.", "Okay.");
 	private void UI_ClearChatBox(Entry entry) => entry.Text = "";
 	private void cmdMpTimer120_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
