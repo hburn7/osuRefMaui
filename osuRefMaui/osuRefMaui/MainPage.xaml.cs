@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 	}
 
-	private void OnLoaded(object sender, EventArgs e)
+	private async void OnLoaded(object sender, EventArgs e)
 	{
 		if (_credentials.RememberMe)
 		{
@@ -45,6 +45,9 @@ public partial class MainPage : ContentPage
 			Username.Text = _credentials.Username;
 			Password.Text = _credentials.IrcPassword;
 			RememberMe.IsChecked = _credentials.RememberMe;
+			
+			// Automatically login
+			OnLoginClicked(null, null);
 		}
 	}
 
