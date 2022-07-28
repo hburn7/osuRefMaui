@@ -62,7 +62,7 @@ public partial class MissionControl : ContentPage
 					{
 						return;
 					}
-					
+
 					_tabHandler.RouteToTab(m);
 					UI_RecolorTab(channel);
 				});

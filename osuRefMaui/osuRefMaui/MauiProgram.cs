@@ -1,17 +1,39 @@
 ﻿using IrcDotNet;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 using osuRefMaui.Core.IRC;
 using osuRefMaui.Core.IRC.Filtering;
 using osuRefMaui.Core.IRC.LoginInformation;
+#if WINDOWS
+using WinUIEx;
+#endif
 
 namespace osuRefMaui;
 
 public static class MauiProgram
 {
+	private const int DefaultWidth = 850;
+	private const int DefaultHeight = 600;
+	
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder.UseMauiApp<App>();
+
+#if WINDOWS
+		// Set size and center on screen
+		builder.ConfigureLifecycleEvents(events =>
+		{
+			events.AddWindows(wndLifeCycleBuilder =>
+			{
+				wndLifeCycleBuilder.OnWindowCreated(window =>
+				{
+					//Set size and center on screen using WinUIEx extension method
+					window.CenterOnScreen(DefaultWidth, DefaultHeight);
+				});
+			});
+		});
+#endif
 
 		// Configure services
 		builder.Services.AddLogging(loggingBuilder => { loggingBuilder.AddDebug(); });
