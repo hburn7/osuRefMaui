@@ -33,6 +33,7 @@ public static class MauiProgram
 				});
 			});
 		});
+		// MACCATALYST https://github.com/dotnet/maui/discussions/2370#discussioncomment-3232561
 #endif
 
 		// Configure services
