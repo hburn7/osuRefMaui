@@ -141,7 +141,7 @@ public partial class MissionControl : ContentPage
 					// Force scroll to bottom of scrollview
 					if (ChatScrollView.Children.Any())
 					{
-						await UI_ScrollToBottom(force: true, animated: false);
+						await UI_ScrollToBottom(true, false);
 					}
 				});
 			};
@@ -284,70 +284,80 @@ public partial class MissionControl : ContentPage
 		// Process /commands
 		if (rawText.StartsWith("/"))
 		{
-			var cmdHandler = new CommandHandler(rawText);
-			if (cmdHandler.IsCustomCommand)
+			try
 			{
-				// Process custom commands
-				if (cmdHandler.CustomCommand == CustomCommand.Clear)
+				var cmdHandler = new CommandHandler(rawText);
+				if (cmdHandler.IsCustomCommand)
 				{
-					if (_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
+					// Process custom commands
+					if (cmdHandler.CustomCommand == CustomCommand.Clear)
 					{
-						chatStack.Children.Clear();
+						if (_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
+						{
+							chatStack.Children.Clear();
+						}
+					}
+				}
+				else
+				{
+					// Process chat commands (/part, /quit, /logout, etc.)
+					var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
+
+					switch (cmdHandler.Command)
+					{
+						case IrcCommand.Join:
+							if (cmdHandler.Args.Any())
+							{
+								foreach (string channel in cmdHandler.Args)
+								{
+									try
+									{
+										_tabHandler.AddTab(channel, true);
+									}
+									catch (Exception exception)
+									{
+										_logger.LogWarning(exception, "Failed to close tab");
+									}
+								}
+							}
+							else
+							{
+								_tabHandler.AddTab(message.Channel, true);
+							}
+
+							break;
+						case IrcCommand.Part:
+							// UI close tab -- outgoing message handler takes care of the internals
+							if (cmdHandler.Args.Any())
+							{
+								foreach (string channel in cmdHandler.Args)
+								{
+									try
+									{
+										_tabHandler.RemoveTab(channel);
+									}
+									catch (Exception exception)
+									{
+										_logger.LogWarning(exception, "Failed to close tab");
+									}
+								}
+							}
+							else
+							{
+								_tabHandler.RemoveTab(message.Channel);
+							}
+
+							break;
+						default:
+							DisplayInvalidCommandAlert();
+							break;
 					}
 				}
 			}
-			else
+			catch (InvalidOperationException)
 			{
-				// Process chat commands (/part, /quit, /logout, etc.)
-				var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
-
-				switch (cmdHandler.Command)
-				{
-					case IrcCommand.Join:
-						if (cmdHandler.Args.Any())
-						{
-							foreach (string channel in cmdHandler.Args)
-							{
-								try
-								{
-									_tabHandler.AddTab(channel, true);
-								}
-								catch (Exception exception)
-								{
-									_logger.LogWarning(exception, "Failed to close tab");
-								}
-							}
-						}
-						else
-						{
-							_tabHandler.AddTab(message.Channel, true);
-						}
-						break;
-					case IrcCommand.Part:
-						// UI close tab -- outgoing message handler takes care of the internals
-						if (cmdHandler.Args.Any())
-						{
-							foreach (string channel in cmdHandler.Args)
-							{
-								try
-								{
-									_tabHandler.RemoveTab(channel);
-								}
-								catch (Exception exception)
-								{
-									_logger.LogWarning(exception, "Failed to close tab");
-								}
-							}
-						}
-						else
-						{
-							_tabHandler.RemoveTab(message.Channel);
-						}
-						break;
-					default:
-						DisplayAlert("Not Supported", "This command is not supported.", "Okay.");
-						break;
-				}
+				// User used an invalid command
+				DisplayInvalidCommandAlert();
 			}
 		}
 		else
@@ -359,12 +369,21 @@ public partial class MissionControl : ContentPage
 		UI_ClearChatBox((Entry)sender);
 	}
 
+	private void DisplayInvalidCommandAlert() => DisplayAlert("Invalid Command", "That command is not supported.", "Okay.");
 	private void UI_ClearChatBox(Entry entry) => entry.Text = "";
-	private void cmdMpTimer120_Clicked(object sender, EventArgs e) {}
-	private void cmdMpTimer90_Clicked(object sender, EventArgs e) {}
-	private void cmdMpStart10_Clicked(object sender, EventArgs e) {}
-	private void cmdMpStart5_Clicked(object sender, EventArgs e) {}
-	private void cmdMpAbort_Clicked(object sender, EventArgs e) {}
+	private void cmdMpTimer120_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private void cmdMpTimer90_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private void cmdMpStart10_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private void cmdMpStart5_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private void cmdMpAbort_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private void CmdMpAbortTimer_OnClicked(object sender, EventArgs e) => EnactTextButton(sender);
+	private string GetTextFromSender(object sender) => ((Button)sender).Text;
+
+	/// <summary>
+	///  Sends the button's text as a chat message. Assumes the sender is a button.
+	/// </summary>
+	/// <param name="sender"></param>
+	private void EnactTextButton(object sender) => _outgoingMessageHandler.Send(((Button)sender).Text, _tabHandler.ActiveTab);
 
 	private void filterCheckBoxBanchoJoin_CheckChanged(object sender, EventArgs e)
 	{

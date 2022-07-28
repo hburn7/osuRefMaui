@@ -30,10 +30,6 @@ public class CommandHandler : ICommandHandler
 		CustomCommand = ResolveCustomCommand();
 		IsCustomCommand = CustomCommand != null;
 
-		_expectedArgs = IsCustomCommand ? ExpectedArgs(CustomCommand!.Value) : ExpectedArgs(Command!.Value);
-
-		ValidArgumentCount = ValidateArgCount();
-
 		if (Command == null && CustomCommand == null)
 		{
 			throw new InvalidOperationException("Invalid command");
@@ -43,6 +39,10 @@ public class CommandHandler : ICommandHandler
 		{
 			throw new InvalidOperationException("Custom command matched both custom and non custom parameters.");
 		}
+		
+		_expectedArgs = IsCustomCommand ? ExpectedArgs(CustomCommand!.Value) : ExpectedArgs(Command!.Value);
+
+		ValidArgumentCount = ValidateArgCount();
 	}
 
 	public IrcCommand? Command { get; }
@@ -70,7 +70,7 @@ public class CommandHandler : ICommandHandler
 		"quit" or "disconnect" or "logout" => IrcCommand.Quit,
 		"part" or "leave" or "close" => IrcCommand.Part, // Also responsible for closing tabs
 		"join" or "add" => IrcCommand.Join,
-		"query" or "msg" or "message" or "privmsg" or "w" or "whisper" or "privatemessage" or "pm" or "r" => IrcCommand.PrivMsg,
+		"chat" or "query" or "msg" or "message" or "privmsg" or "w" or "whisper" or "privatemessage" or "pm" or "r" => IrcCommand.PrivMsg,
 		_ => null
 	};
 
