@@ -175,29 +175,33 @@
                                          VerticalOptions="Start">
                         <CheckBox x:Name="cbFilterBanchoJoin"
                                   IsChecked="True"
-                                  CheckedChanged="filterCheckBoxBanchoJoin_CheckChanged" />
+                                  CheckedChanged="filterCheckBoxBanchoJoin_CheckChanged" /> 
+                        <CheckBox x:Name="cbFilterBanchoPart"
+                                  IsChecked="True"
+                                  CheckedChanged="filterCheckBoxBanchoPart_CheckChanged" />
                         <CheckBox x:Name="cbFilterBanchoQuit"
                                   IsChecked="True"
                                   CheckedChanged="filterCheckBoxBanchoQuit_CheckChanged" />
                         <CheckBox x:Name="cbFilterBanchoPing"
                                   IsChecked="True"
                                   CheckedChanged="filterCheckBoxBanchoPing_CheckChanged" />
-                        <CheckBox x:Name="cbFilterBanchoSlotMove"
+                        <CheckBox x:Name="cbFilterMultiSlotMove"
                                   IsChecked="False"
-                                  CheckedChanged="filterCheckBoxBanchoSlotMove_CheckChanged" />
-                        <CheckBox x:Name="cbFilterBanchoTeamChange"
+                                  CheckedChanged="filterCheckBoxMultiSlotMove_CheckChanged" />
+                        <CheckBox x:Name="cbFilterMultiTeamChange"
                                   IsChecked="False"
-                                  CheckedChanged="filterCheckBoxBanchoTeamChange_CheckChanged" />
+                                  CheckedChanged="filterCheckBoxMultiTeamChange_CheckChanged" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="13"
                                          Margin="-10, -3.5"
                                          HorizontalOptions="Start"
                                          VerticalOptions="Start">
                         <Label Text="Bancho Join" />
+                        <Label Text="Bancho Part" />
                         <Label Text="Bancho Quit" />
                         <Label Text="Bancho Ping" />
-                        <Label Text="Bancho Slot Move" />
-                        <Label Text="Bancho Team Change" />
+                        <Label Text="Multi Slot Move" />
+                        <Label Text="Multi Team Change" />
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
             </Grid>

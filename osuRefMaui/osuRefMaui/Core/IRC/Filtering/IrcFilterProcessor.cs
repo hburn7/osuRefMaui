@@ -16,12 +16,14 @@ public class IrcFilterProcessor
 
 	public bool IsFiltered() => IsSpam() ||
 	                            (_filter.FilterJoin && FilterJoin()) ||
+	                            (_filter.FilterPart && FilterPart()) ||
 	                            (_filter.FilterQuit && FilterQuit()) ||
 	                            (_filter.FilterPing && FilterPing()) ||
 	                            (_filter.FilterSlotMove && FilterSlotMove()) ||
 	                            (_filter.FilterTeamChange && FilterTeamChange());
 
 	private bool FilterJoin() => _chatMessage.Command == IrcCommand.Join;
+	private bool FilterPart() => _chatMessage.Command == IrcCommand.Part;
 	private bool FilterQuit() => _chatMessage.Command == IrcCommand.Quit;
 	private bool FilterPing() => _chatMessage.Command == IrcCommand.Ping;
 

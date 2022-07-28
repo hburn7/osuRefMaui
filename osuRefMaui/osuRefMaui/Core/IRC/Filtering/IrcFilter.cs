@@ -3,6 +3,7 @@
 public class IrcFilter
 {
 	public bool FilterJoin { get; set; }
+	public bool FilterPart { get; set; }
 	public bool FilterQuit { get; set; }
 	public bool FilterPing { get; set; }
 	public bool FilterSlotMove { get; set; }

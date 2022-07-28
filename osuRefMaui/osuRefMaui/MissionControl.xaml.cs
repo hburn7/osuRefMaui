@@ -108,10 +108,11 @@ public partial class MissionControl : ContentPage
 	private void InitFilter()
 	{
 		_filter.FilterJoin = cbFilterBanchoJoin.IsChecked;
+		_filter.FilterPart = cbFilterBanchoPart.IsChecked;
 		_filter.FilterQuit = cbFilterBanchoQuit.IsChecked;
 		_filter.FilterPing = cbFilterBanchoPing.IsChecked;
-		_filter.FilterSlotMove = cbFilterBanchoSlotMove.IsChecked;
-		_filter.FilterTeamChange = cbFilterBanchoTeamChange.IsChecked;
+		_filter.FilterSlotMove = cbFilterMultiSlotMove.IsChecked;
+		_filter.FilterTeamChange = cbFilterMultiTeamChange.IsChecked;
 	}
 
 	/// <summary>
@@ -336,6 +337,12 @@ public partial class MissionControl : ContentPage
 		_filter.FilterJoin = isChecked;
 	}
 
+	private void filterCheckBoxBanchoPart_CheckChanged(object sender, EventArgs e)
+	{
+		bool isChecked = ((CheckBox)sender).IsChecked;
+		_filter.FilterPart = isChecked;
+	}
+
 	private void filterCheckBoxBanchoQuit_CheckChanged(object sender, EventArgs e)
 	{
 		bool isChecked = ((CheckBox)sender).IsChecked;
@@ -348,13 +355,13 @@ public partial class MissionControl : ContentPage
 		_filter.FilterPing = isChecked;
 	}
 
-	private void filterCheckBoxBanchoSlotMove_CheckChanged(object sender, EventArgs e)
+	private void filterCheckBoxMultiSlotMove_CheckChanged(object sender, EventArgs e)
 	{
 		bool isChecked = ((CheckBox)sender).IsChecked;
 		_filter.FilterSlotMove = isChecked;
 	}
 
-	private void filterCheckBoxBanchoTeamChange_CheckChanged(object sender, EventArgs e)
+	private void filterCheckBoxMultiTeamChange_CheckChanged(object sender, EventArgs e)
 	{
 		bool isChecked = ((CheckBox)sender).IsChecked;
 		_filter.FilterTeamChange = isChecked;
