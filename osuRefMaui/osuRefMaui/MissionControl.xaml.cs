@@ -304,15 +304,50 @@ public partial class MissionControl : ContentPage
 				switch (cmdHandler.Command)
 				{
 					case IrcCommand.Join:
-						_tabHandler.AddTab(message.Channel, true);
+						if (cmdHandler.Args.Any())
+						{
+							foreach (string channel in cmdHandler.Args)
+							{
+								try
+								{
+									_tabHandler.AddTab(channel, true);
+								}
+								catch (Exception exception)
+								{
+									_logger.LogWarning(exception, "Failed to close tab");
+								}
+							}
+						}
+						else
+						{
+							_tabHandler.AddTab(message.Channel, true);
+						}
 						break;
 					case IrcCommand.Part:
 						// UI close tab -- outgoing message handler takes care of the internals
-						_tabHandler.RemoveTab(message.Channel);
+						if (cmdHandler.Args.Any())
+						{
+							foreach (string channel in cmdHandler.Args)
+							{
+								try
+								{
+									_tabHandler.RemoveTab(channel);
+								}
+								catch (Exception exception)
+								{
+									_logger.LogWarning(exception, "Failed to close tab");
+								}
+							}
+						}
+						else
+						{
+							_tabHandler.RemoveTab(message.Channel);
+						}
+						break;
+					default:
+						DisplayAlert("Not Supported", "This command is not supported.", "Okay.");
 						break;
 				}
-
-				//todo: Listen to channel join / leave / etc. events and handle them in the UI.
 			}
 		}
 		else

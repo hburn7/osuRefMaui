@@ -24,12 +24,10 @@ public class CommandHandler : ICommandHandler
 		}
 
 		_rawInput = rawInput;
-
 		_rawCommand = _rawInput.Split("/")[1].Split(" ")[0];
 
 		Command = ResolveCommand();
 		CustomCommand = ResolveCustomCommand();
-
 		IsCustomCommand = CustomCommand != null;
 
 		_expectedArgs = IsCustomCommand ? ExpectedArgs(CustomCommand!.Value) : ExpectedArgs(Command!.Value);
@@ -56,12 +54,14 @@ public class CommandHandler : ICommandHandler
 		get
 		{
 			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if (_expectedArgs > 0)
+			try
 			{
 				return _rawInput.Split("/")[1].Split(" ")[1..];
 			}
-
-			return Array.Empty<string>();
+			catch (Exception)
+			{
+				return Array.Empty<string>();
+			}
 		}
 	}
 
@@ -77,14 +77,15 @@ public class CommandHandler : ICommandHandler
 	private CustomCommand? ResolveCustomCommand() => _rawCommand.ToLower() switch
 	{
 		"clear" or "clean" => IRC.CustomCommand.Clear,
+		"save" or "savelog" => IRC.CustomCommand.Savelog,
 		_ => null
 	};
 
 	private int ExpectedArgs(IrcCommand command) => command switch
 	{
 		IrcCommand.Quit => 0,
-		IrcCommand.Join => 1,
-		IrcCommand.Part => 0,
+		IrcCommand.Join => -1,
+		IrcCommand.Part => -1,
 		IrcCommand.PrivMsg => -1,
 		_ => throw new ArgumentOutOfRangeException(nameof(command), command, null)
 	};
@@ -92,8 +93,9 @@ public class CommandHandler : ICommandHandler
 	private int ExpectedArgs(CustomCommand command) => command switch
 	{
 		IRC.CustomCommand.Clear => 0,
+		IRC.CustomCommand.Savelog => 0,
 		_ => throw new ArgumentOutOfRangeException(nameof(command), command, null)
 	};
 
-	private bool ValidateArgCount() => Args.Length == _expectedArgs;
+	private bool ValidateArgCount() => Args.Length == _expectedArgs || _expectedArgs == -1;
 }
