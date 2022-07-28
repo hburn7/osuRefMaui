@@ -3,6 +3,7 @@ using osuRefMaui.Core.Derivatives.Labeling;
 using osuRefMaui.Core.IRC.Interfaces;
 using osuRefMaui.Core.IRC.LoginInformation;
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace osuRefMaui.Core.IRC
 {
@@ -11,12 +12,14 @@ namespace osuRefMaui.Core.IRC
 		public const string DefaultTabName = "osu!Bancho";
 		private readonly Credentials _credentials;
 		private readonly ILogger<TabHandler> _logger;
+		private readonly Pathing _pathing;
 		private readonly ConcurrentDictionary<string, VerticalStackLayout> _tabChatStacks;
 
-		public TabHandler(ILogger<TabHandler> logger, Credentials credentials)
+		public TabHandler(ILogger<TabHandler> logger, Credentials credentials, Pathing pathing)
 		{
 			_logger = logger;
 			_credentials = credentials;
+			_pathing = pathing;
 			_tabChatStacks = new ConcurrentDictionary<string, VerticalStackLayout>(StringComparer.OrdinalIgnoreCase);
 		}
 
@@ -141,6 +144,55 @@ namespace osuRefMaui.Core.IRC
 
 			_logger.LogInformation($"Removed tab {channel}, firing event");
 			OnTabRemoved?.Invoke(channel);
+		}
+
+		/// <summary>
+		///  Saves the current chat log
+		/// </summary>
+		public async Task SaveCurrentLog() => await SaveLog(ActiveTab);
+
+		/// <summary>
+		///  Saves all open chat logs
+		/// </summary>
+		public async Task SaveAllLogs()
+		{
+			_logger.LogInformation("SaveAllLogs invoked");
+			foreach (string key in _tabChatStacks.Keys)
+			{
+				await SaveLog(key);
+			}
+		}
+
+		private async Task SaveLog(string channel)
+		{
+			if (!TryGetChatStack(channel, out var chatStack))
+			{
+				_logger.LogWarning($"Failed to save log for {channel} -- channel does not exist.");
+				return;
+			}
+
+			try
+			{
+				string fileName = Path.Combine(_pathing.SaveLogPath, $"{channel}.txt");
+				var textBuilder = new StringBuilder();
+
+				foreach (var child in chatStack.Children)
+				{
+					if (child is not Label label)
+					{
+						continue;
+					}
+
+					textBuilder.AppendLine(label.FormattedText.ToString());
+				}
+
+				await File.WriteAllTextAsync(fileName, textBuilder.ToString());
+				_logger.LogInformation($"Saved log for channel {channel} successfully at {fileName}");
+			}
+			catch (IOException e)
+			{
+				_logger.LogCritical(e, $"Fatal error occurred while saving log for channel {channel}");
+			}
 		}
 	}
 }

@@ -39,7 +39,7 @@ public class CommandHandler : ICommandHandler
 		{
 			throw new InvalidOperationException("Custom command matched both custom and non custom parameters.");
 		}
-		
+
 		_expectedArgs = IsCustomCommand ? ExpectedArgs(CustomCommand!.Value) : ExpectedArgs(Command!.Value);
 
 		ValidArgumentCount = ValidateArgCount();
@@ -78,6 +78,7 @@ public class CommandHandler : ICommandHandler
 	{
 		"clear" or "clean" => IRC.CustomCommand.Clear,
 		"save" or "savelog" => IRC.CustomCommand.Savelog,
+		"saveall" or "savealllog" or "savealllogs" => IRC.CustomCommand.SaveAllLogs,
 		_ => null
 	};
 
@@ -94,6 +95,7 @@ public class CommandHandler : ICommandHandler
 	{
 		IRC.CustomCommand.Clear => 0,
 		IRC.CustomCommand.Savelog => 0,
+		IRC.CustomCommand.SaveAllLogs => 0,
 		_ => throw new ArgumentOutOfRangeException(nameof(command), command, null)
 	};
 

@@ -1,6 +1,6 @@
 ﻿using IrcDotNet;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.LifecycleEvents;
+using osuRefMaui.Core;
 using osuRefMaui.Core.IRC;
 using osuRefMaui.Core.IRC.Filtering;
 using osuRefMaui.Core.IRC.LoginInformation;
@@ -14,7 +14,7 @@ public static class MauiProgram
 {
 	private const int DefaultWidth = 850;
 	private const int DefaultHeight = 650;
-	
+
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
@@ -55,6 +55,9 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IncomingMessageHandler>();
 		builder.Services.AddSingleton<OutgoingMessageHandler>();
 		builder.Services.AddSingleton<TabHandler>();
+
+		// Other
+		builder.Services.AddSingleton<Pathing>();
 
 		return builder.Build();
 	}

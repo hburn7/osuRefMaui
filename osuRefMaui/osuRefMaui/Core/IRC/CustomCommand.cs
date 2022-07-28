@@ -3,5 +3,6 @@
 public enum CustomCommand
 {
 	Clear,
-	Savelog
+	Savelog,
+	SaveAllLogs
 }

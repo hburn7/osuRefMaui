@@ -271,7 +271,7 @@ public partial class MissionControl : ContentPage
 		_tabHandler.AddTab(channel, true);
 	}
 
-	private void ChatBox_Completed(object sender, EventArgs e)
+	private async void ChatBox_Completed(object sender, EventArgs e)
 	{
 		string rawText = ((Entry)sender).Text;
 
@@ -289,13 +289,24 @@ public partial class MissionControl : ContentPage
 				var cmdHandler = new CommandHandler(rawText);
 				if (cmdHandler.IsCustomCommand)
 				{
-					// Process custom commands
-					if (cmdHandler.CustomCommand == CustomCommand.Clear)
+					switch (cmdHandler.CustomCommand)
 					{
-						if (_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
-						{
-							chatStack.Children.Clear();
-						}
+						// Process custom commands
+						case CustomCommand.Clear:
+							if (_tabHandler.TryGetChatStack(_tabHandler.ActiveTab, out var chatStack))
+							{
+								chatStack.Children.Clear();
+							}
+
+							break;
+						case CustomCommand.Savelog:
+							await _tabHandler.SaveCurrentLog();
+							await DisplayAlert("Log Saved", $"Successfully saved the current log ({_tabHandler.ActiveTab}).", "Okay");
+							break;
+						case CustomCommand.SaveAllLogs:
+							await _tabHandler.SaveAllLogs();
+							await DisplayAlert("Log Saved", "Successfully saved all logs.", "Okay");
+							break;
 					}
 				}
 				else
@@ -360,6 +371,11 @@ public partial class MissionControl : ContentPage
 				// User used an invalid command
 				DisplayInvalidCommandAlert();
 			}
+			catch (Exception ex)
+			{
+				_logger.LogCritical(ex, "An unexpected error occurred");
+				throw ex;
+			}
 		}
 		else
 		{
@@ -371,7 +387,7 @@ public partial class MissionControl : ContentPage
 	}
 
 	/// <summary>
-	/// Acts upon each argument with the specified action
+	///  Acts upon each argument with the specified action
 	/// </summary>
 	private void ActUponArgs(string[] args, Action<string> action)
 	{
@@ -380,6 +396,7 @@ public partial class MissionControl : ContentPage
 			action.Invoke(arg);
 		}
 	}
+
 	private void DisplayInvalidCommandAlert() => DisplayAlert("Invalid Command", "That command is not supported.", "Okay.");
 	private void UI_ClearChatBox(Entry entry) => entry.Text = "";
 	private void cmdMpTimer120_Clicked(object sender, EventArgs e) => EnactTextButton(sender);
