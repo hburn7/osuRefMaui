@@ -21,6 +21,16 @@ namespace osuRefMaui.Core.IRC
 			StatusCode = IdentifyStatusCode();
 		}
 
+		public ChatMessage(string channel, string content, string sender)
+		{
+			TimeStamp = DateTimeOffset.Now;
+
+			Command = IrcCommand.Null;
+			Channel = channel;
+			Content = content;
+			Sender = sender;
+		}
+
 		public int? StatusCode { get; }
 		public IrcClient.IrcMessage SourceMessage { get; }
 		public string? SourceName => SourceMessage.Source?.Name;

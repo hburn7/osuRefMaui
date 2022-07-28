@@ -56,7 +56,15 @@ namespace osuRefMaui.Core.IRC
 			}
 
 			// Route to tab
-			var label = new ConsoleTextLabel(chatMessage);
+			Label label;
+			if (chatMessage is SystemMessage)
+			{
+				label = new ConsoleSystemLabel(chatMessage);
+			}
+			else
+			{
+				label = new ConsoleTextLabel(chatMessage);
+			}
 
 			bool routeToDefault = chatMessage.Channel == DefaultTabName;
 
@@ -72,7 +80,7 @@ namespace osuRefMaui.Core.IRC
 					{
 						return;
 					}
-					
+
 					// Create the tab if it doesn't exist.
 					AddTab(channel, false);
 				}

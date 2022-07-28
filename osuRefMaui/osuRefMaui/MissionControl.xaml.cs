@@ -1,4 +1,3 @@
-using IrcDotNet;
 using Microsoft.Extensions.Logging;
 using osuRefMaui.Core.Coloring;
 using osuRefMaui.Core.Derivatives.Buttons;
@@ -12,19 +11,17 @@ public partial class MissionControl : ContentPage
 {
 	private static bool _previouslyLoaded;
 	private readonly ChatQueue _chatQueue;
-	private readonly StandardIrcClient _client;
 	private readonly IrcFilter _filter;
 	private readonly ILogger<MissionControl> _logger;
 	private readonly OutgoingMessageHandler _outgoingMessageHandler;
 	private readonly TabHandler _tabHandler;
 
 	public MissionControl(ILogger<MissionControl> logger, TabHandler tabHandler, ChatQueue chatQueue,
-		StandardIrcClient client, OutgoingMessageHandler outgoingMessageHandler, IrcFilter filter)
+		OutgoingMessageHandler outgoingMessageHandler, IrcFilter filter)
 	{
 		_logger = logger;
 		_tabHandler = tabHandler;
 		_chatQueue = chatQueue;
-		_client = client;
 		_outgoingMessageHandler = outgoingMessageHandler;
 		_filter = filter;
 
@@ -84,10 +81,6 @@ public partial class MissionControl : ContentPage
 
 			_tabHandler.AddTab("#osu", false);
 			_tabHandler.AddTab("BanchoBot", false);
-
-			_outgoingMessageHandler.Send("Joining #osu...", "#osu", false);
-			_outgoingMessageHandler.Send("Contacting BanchoBot...", "BanchoBot", false);
-			_outgoingMessageHandler.Send("!roll", "BanchoBot");
 
 			// Chat dequeue loop
 			Task.Run(async () =>
@@ -207,6 +200,9 @@ public partial class MissionControl : ContentPage
 		{
 			UI_RecolorTab(channel);
 		}
+
+		var joinMessage = new SystemMessage(channel, $"Joined {channel}");
+		_chatQueue.Enqueue(joinMessage);
 	});
 
 	private void UI_RecolorTab(string channel, bool resetToDefault = false)

@@ -18,6 +18,9 @@ namespace osuRefMaui.Core.Coloring
 		public static readonly string ConsoleTextLabelFontFamily = "Consolas";
 		public static Thickness ConsoleTextLabelMargin = new(7, 0);
 
+		// System messages
+		public static Color SystemTextColor = Colors.Gray;
+
 		public static Color GetColorForCommand(IrcCommand command) => command switch
 		{
 			IrcCommand.Join => Colors.Blue,
