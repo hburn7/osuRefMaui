@@ -120,6 +120,7 @@ namespace osuRefMaui.Core.IRC
 			if (!_tabChatStacks.TryAdd(channel, new VerticalStackLayout()))
 			{
 				_logger.LogWarning($"An attempt was made to add a tab that already exists: {channel}");
+				return;
 			}
 
 			OnTabCreated?.Invoke(channel, manuallyAdded);

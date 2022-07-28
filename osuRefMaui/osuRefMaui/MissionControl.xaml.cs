@@ -299,7 +299,6 @@ public partial class MissionControl : ContentPage
 			{
 				// Process chat commands (/part, /quit, /logout, etc.)
 				var message = _outgoingMessageHandler.CreateChatMessage(cmdHandler);
-				_outgoingMessageHandler.Send(message);
 
 				switch (cmdHandler.Command)
 				{
