@@ -140,7 +140,7 @@ public partial class MissionControl : ContentPage
 					// Force scroll to bottom of scrollview
 					if (ChatScrollView.Children.Any())
 					{
-						await UI_ScrollToBottom(true);
+						await UI_ScrollToBottom(force: true, animated: false);
 					}
 				});
 			};
@@ -155,7 +155,7 @@ public partial class MissionControl : ContentPage
 	///  Scrolls to the bottom of the current chat view.
 	/// </summary>
 	/// <param name="force">Whether to ignore auto-scrolling delta and force scroll to bottom</param>
-	private async Task UI_ScrollToBottom(bool force = false)
+	private async Task UI_ScrollToBottom(bool force = false, bool animated = true)
 	{
 		var endChild = (VisualElement)ChatScrollView.Children[^1];
 
@@ -168,7 +168,7 @@ public partial class MissionControl : ContentPage
 			return;
 		}
 
-		await ChatScrollView.ScrollToAsync(0, ChatScrollView.GetScrollPositionForElement(endChild, ScrollToPosition.End).Y, true);
+		await ChatScrollView.ScrollToAsync(0, ChatScrollView.GetScrollPositionForElement(endChild, ScrollToPosition.End).Y, animated);
 	}
 
 	private void UI_SwapTab(string channel)
