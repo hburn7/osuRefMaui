@@ -42,11 +42,6 @@
     </ContentPage.Resources>
 
     <FlexLayout Wrap="Wrap" Direction="Column" AlignItems="Center" JustifyContent="Start">
-        <Label Text="o!Ref"
-               SemanticProperties.HeadingLevel="Level1"
-               FontSize="32"
-               VerticalTextAlignment="Start"
-               HorizontalTextAlignment="Start" />
         <!-- osu! Main Chat Window Background & Tabs -->
         <Border StrokeShape="RoundRectangle 15,15,15,15"
                 HorizontalOptions="StartAndExpand"
@@ -108,8 +103,6 @@
                     Completed="ChatBox_Completed" />
             </Grid>
         </Border>
-
-
         <!-- Command Center -->
         <Border StrokeShape="RoundRectangle 15,15,15,15"
                 BackgroundColor="#333"
@@ -210,5 +203,9 @@
                 </HorizontalStackLayout>
             </Grid>
         </Border>
+        <Label x:Name="versionLabel"
+               FontSize="14"
+               VerticalTextAlignment="End"
+               HorizontalTextAlignment="End" />
     </FlexLayout>
 </ContentPage>

@@ -13,8 +13,8 @@ namespace osuRefMaui;
 
 public static class MauiProgram
 {
-	private const int DefaultWidth = 850;
-	private const int DefaultHeight = 650;
+	private const int DefaultWidth = 767;
+	private const int DefaultHeight = 660;
 
 	public static MauiApp CreateMauiApp()
 	{

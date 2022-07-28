@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using osuRefMaui.Core;
 using osuRefMaui.Core.Coloring;
 using osuRefMaui.Core.Derivatives.Buttons;
 using osuRefMaui.Core.IRC;
@@ -38,6 +39,7 @@ public partial class MissionControl : ContentPage
 		{
 			// Setup chat filter
 			InitFilter();
+			InitVersion();
 
 			// Event handler which sets child's clicked event handler which then resets the color of the tab
 			ChatTabHorizontalStack.ChildAdded += ChatTabHorizontalStackOnChildAdded;
@@ -104,6 +106,8 @@ public partial class MissionControl : ContentPage
 
 		_previouslyLoaded = true;
 	}
+
+	private void InitVersion() => versionLabel.Text = Updater.Version;
 
 	private void InitFilter()
 	{
